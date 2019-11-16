@@ -1,0 +1,50 @@
+PODS:
+  - Alamofire (4.9.1)
+  - DropDown (2.3.13)
+  - FlagPhoneNumber (0.7.8):
+    - FlagPhoneNumber/libPhoneNumberiOS (= 0.7.8)
+  - FlagPhoneNumber/libPhoneNumberiOS (0.7.8)
+  - NVActivityIndicatorView (4.8.0):
+    - NVActivityIndicatorView/Presenter (= 4.8.0)
+  - NVActivityIndicatorView/Presenter (4.8.0)
+  - SDWebImage (5.2.5):
+    - SDWebImage/Core (= 5.2.5)
+  - SDWebImage/Core (5.2.5)
+  - SwiftMessageBar (5.5.0)
+  - SwiftyJSON (5.0.0)
+  - ViewAnimator (2.7.0)
+
+DEPENDENCIES:
+  - Alamofire (~> 4.7)
+  - DropDown
+  - FlagPhoneNumber
+  - NVActivityIndicatorView
+  - SDWebImage
+  - SwiftMessageBar
+  - SwiftyJSON
+  - ViewAnimator
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - DropDown
+    - FlagPhoneNumber
+    - NVActivityIndicatorView
+    - SDWebImage
+    - SwiftMessageBar
+    - SwiftyJSON
+    - ViewAnimator
+
+SPEC CHECKSUMS:
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  DropDown: 8a2116376c1981888557f72ec2ffc9a5e0e456ec
+  FlagPhoneNumber: 366348d1d54f4828140c0c7f33ccb694c34ddcdd
+  NVActivityIndicatorView: d24b7ebcf80af5dcd994adb650e2b6c93379270f
+  SDWebImage: 4eabf2fa6695c95c47724214417a9c036c965e4a
+  SwiftMessageBar: fc77dd423d52e71fc85fb7a162a9ffc5c858e613
+  SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
+  ViewAnimator: 5af1c6f3b310f012bf081259c43717aa54fbae73
+
+PODFILE CHECKSUM: 5fa6565789a0c0840361dd5e4556427bd4e37363
+
+COCOAPODS: 1.8.4
