@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import SwiftyJSON
+import Alamofire
 
-class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
+class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource{
 
     
     //-----------------------
@@ -26,10 +28,9 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
     // MARK: Identifiers
     //-------------------------
     
-    var docData = ["US cyber Security Clusters","IBM Waston Clusters","WC Gate","Australia Embassy Comissions"]
-    
+    var timer = Timer()
+    var docData = JSON()
  
-   
     //----------------------------
     //MARK: View Life Cycle
     //----------------------------
@@ -46,6 +47,8 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
        self.tblDocumentView.tableFooterView = UIView()
         
         tblDocumentView.rowHeight = 80
+        
+        documentApi()
     }
     
   
@@ -66,9 +69,12 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
         
         
         let cell = tblDocumentView.dequeueReusableCell(withIdentifier: "tblDocumentCell") as! tblDocumentCell
+        
+      
      
-        cell.lblDocument.text = docData[indexPath.row]
+        cell.lblDocument.text = docData[indexPath.row]["documentName"].stringValue
        
+        
     
         return cell
     }
@@ -81,7 +87,8 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
     {
 
         let obj = storyboard?.instantiateViewController(withIdentifier: "DocumentViewVC") as! DocumentViewVC
-
+      
+        obj.path = self.docData[indexPath.row]["documentPath"].stringValue
 
         navigationController?.pushViewController(obj, animated: true)
 
@@ -93,18 +100,18 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
     //----------------------------
     
     
-//    @objc func InternetAvailable()
-//    {
-//        if Connectivity.isConnectedToInternet()
-//        {
-//            ChatHistoryApi()
-//        }
-//        else
-//        {
-//            self.stopAnimating()
-//            PopUp(Controller: self, title: "Internet Connectivity", message: "Internet not available")
-//        }
-//    }
+    @objc func InternetAvailable()
+    {
+        if Connectivity.isConnectedToInternet()
+        {
+           documentApi()
+        }
+        else
+        {
+            self.stopAnimating()
+           PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+        }
+    }
     
     
     @IBAction func btnBackTUI(_ sender: UIButton)
@@ -112,83 +119,94 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
                 navigationController?.popViewController(animated: true)
           }
     
+    @IBAction func btnDocumentTUI(_ sender: UIButton)
+    {
+       let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory)
+
+             let url = "http://www.pdf995.com/samples/pdf.pdf"
+                 Alamofire.download(
+                     url,
+                     method: .get,
+                     parameters: nil,
+                     encoding: JSONEncoding.default,
+                     headers: nil,
+                     to: destination).downloadProgress(closure: { (progress) in
+                         //progress closure
+                         
+                           print("Upload Progress: \(progress.fractionCompleted)")
+                         
+                         
+                     }).response(completionHandler: { (DefaultDownloadResponse) in
+                         //here you able to access the DefaultDownloadResponse
+                         
+                         print(DefaultDownloadResponse.destinationURL?.lastPathComponent)
+                         
+                         print(DefaultDownloadResponse.destinationURL)
+                         //result closure
+                     })
+         
+         
+    }
     
     //----------------------------
     //MARK: Web Services
     //----------------------------
     
-//
-//    func ChatHistoryApi()
-//    {
-//
-//        let parameter = ["user_id": UserDefaults.standard.integer(forKey: "userid"),"user_type":UserDefaults.standard.integer(forKey: "usertype")]
-//
-//        print(parameter)
-//        if Connectivity.isConnectedToInternet()
-//        {
-//            timer.invalidate()
-//            self.start()
-//
-//            print( "chat History ==>" + appDelegate.ApiBaseUrl + "chat_user_list")
-//
-//            Alamofire.request(appDelegate.ApiBaseUrl + "chat_user_list", method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil).validate().responseJSON(completionHandler: { response in
-//
-//                switch response.result
-//                {
-//
-//                case .success(_):
-//                    print("chat History")
-//
-//                    let result = response.result.value as! NSDictionary
-//
-//                    print(result)
-//
-//                    if (result["status"] as! Int) == 0
-//                    {
-//
-//                        self.lblNoChatFound.isHidden = false
-//                        self.tblChatView.isHidden = true
-//                        print("Error")
-//
-//                        self.stopAnimating()
-//
-//                    }
-//                    else
-//                    {
-//
-//                        self.stopAnimating()
-//
-//                        self.lblNoChatFound.isHidden = true
-//                        self.tblChatView.isHidden = false
-//
-//
-//                        self.chatHistoryData = (result["data"] as! NSArray).mutableCopy() as! NSMutableArray
-//
-//
-////                        UserDefaults.standard.set(result["chat_id"], forKey: "chatid")
-////
-////                        UserDefaults.standard.integer(forKey: "chatid")
-//
-//                        self.tblChatView.reloadData()
-//                    }
-//                case .failure(let error):
-//                    print(error)
-//                }
-//
-//            })
-//
-//        }
-//
-//        else
-//        {
-//            self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.InternetAvailable), userInfo: nil, repeats: true)
-//            PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available")
-//        }
-//
-//    }
-    
-    
-    
- 
+func documentApi()
+            {
+
+                if Connectivity.isConnectedToInternet()
+                {
+
+                    let parameter = ["type":"documentList","conference_id":conferenceId] as [String : Any]
+
+                 print(parameter)
+                    timer.invalidate()
+                    self.start()
+
+                 let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
+                    print(url)
+                    Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
+                        {
+                            response in
+                            switch response.result
+                            {
+                            case .success:
+                             if response.response?.statusCode == 200
+                             {
+
+                                 let result = JSON(response.value!)
+
+                             print(result)
+                             if result["status"].boolValue == false
+                                {
+
+                                  PopUp(Controller: self, title:  "Error!", message: result["msg"].stringValue, type: .error, time: 2)
+
+                                    self.stopAnimating()
+                                }
+                                else
+                                {
+                                    self.stopAnimating()
+
+                                   self.docData = result["document_list"]
+                                   
+                                 
+                                   self.tblDocumentView.reloadData()
+
+                                }
+                             }
+                            case .failure(let error):
+                                print(error)
+                            }
+                    }
+
+                }
+                else
+                {
+                    self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.InternetAvailable), userInfo: nil, repeats: true)
+                    PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+                }
+            }
 
 }

@@ -180,7 +180,25 @@ class ForgetPassVC: UIViewController,UITextFieldDelegate {
                
                 //----------------------------------------------
                 
+                txtEmail.layer.borderColor = UIColor.darkGray.cgColor
+                txtEmail.layer.borderWidth = 1
+                  txtEmail.layer.cornerRadius = 5
+                  txtEmail.clipsToBounds = true
                 
+                txtCode.layer.borderColor = UIColor.darkGray.cgColor
+                txtCode.layer.borderWidth = 1
+                  txtCode.layer.cornerRadius = 5
+                  txtCode.clipsToBounds = true
+                
+                txtPassword.layer.borderColor = UIColor.darkGray.cgColor
+                txtPassword.layer.borderWidth = 1
+                 txtPassword.layer.cornerRadius = 5
+                  txtPassword.clipsToBounds = true
+                
+                txtConfirmPassword.layer.borderColor = UIColor.darkGray.cgColor
+                txtConfirmPassword.layer.borderWidth = 1
+                  txtConfirmPassword.layer.cornerRadius = 5
+                  txtConfirmPassword.clipsToBounds = true
                 
                 self.hideKeyboardTappedArround()
                 

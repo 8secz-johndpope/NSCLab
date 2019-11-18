@@ -10,7 +10,9 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource,UICollectionViewDelegateFlowLayout{
+class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
+   
+    
 
     //-------------------
     // MARK: Outlets
@@ -20,16 +22,8 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
     
     @IBOutlet weak var HeaderView: UIView!
     
-    @IBOutlet weak var colUpcomingView: UICollectionView!
-    
-    @IBOutlet weak var colAttendView: UICollectionView!
-    
-    
-    @IBOutlet weak var colPastView: UICollectionView!
+    @IBOutlet weak var tblUpcomingView: UITableView!
    
-    @IBOutlet weak var colUpcomingHeight: NSLayoutConstraint!
-    @IBOutlet weak var colAttendHeight: NSLayoutConstraint!
-    @IBOutlet weak var colPastHeight: NSLayoutConstraint!
     //------------------------
         // MARK: Identifiers
         //------------------------
@@ -39,10 +33,15 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
     
     var upcomingConferenceData = JSON()
     var attendingConferenceData = JSON()
-    
     var pastconferenceData = JSON()
     
+    var conferenceData = JSON()
+    
+    var sections = ["Upcoming Conference","Attending Conference","Past Conference"]
+            
+    
     var timer = Timer()
+    
 
     //------------------------
       // MARK: View Life Cycle
@@ -61,7 +60,7 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
         
        pastConferenceApi()
                 
-//        attendingConferenceApi()
+        attendingConferenceApi()
         
      
     
@@ -76,117 +75,150 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
           
       }
     
-    //--------------------------
-       // MARK: Table View Methods
-       //--------------------------
+        //--------------------------
+        // MARK: Table View Methods
+       //---------------------------
        
     
-  
-         func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
-         {
-            if  collectionView.tag == 0
-            {
-                 return upcomingConferenceData.count
-            }
-            else if collectionView.tag == 1
-            {
-                 return upcomingConferenceData.count
-            }
-            else
-            {
-                 return pastconferenceData.count
-            }
-                   
-               }
-               
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+         
+        if section == 0
+        {
+              return sections[section]
+        }
+        else if section == 1
+        {
+        return sections[section]
+        }
+        else
+        {
+             return sections[section]
+        }
+      
+     }
+     
+     func numberOfSections(in tableView: UITableView) -> Int {
+         return self.sections.count
+     }
     
-    
+        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+        {
+            switch (section)
+            {
+               case 0:
+                  
+                return upcomingConferenceData.count
+             
+            case 1:
             
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
-    {
-
+                return attendingConferenceData.count
+                
+            case 2:
+                
+                 return pastconferenceData.count
+             
+            default:
+                
+                return section
                  
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ColConferenceCell", for: indexPath) as! ColConferenceCell
+            }
 
-                if  collectionView.tag == 0
-                {
-                    cell.lblTittle.text =   upcomingConferenceData[indexPath.row]["topic"].stringValue
 
-                    cell.lblDate.text = upcomingConferenceData[indexPath.row]["date"].string
+        }
 
-                    let strarray = upcomingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
+       func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
+       {
+       
+        let cell = tblUpcomingView.dequeueReusableCell(withIdentifier: "tblUpcomingCell") as! tblUpcomingCell
+       
+        switch (indexPath.section) {
+           case 0:
+              
+                cell.lblTittle.text =   upcomingConferenceData[indexPath.row]["topic"].stringValue
+                
+                cell.lblDate.text = upcomingConferenceData[indexPath.row]["date"].string
 
-                    print(strarray)
+                let strarray = upcomingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
+                   
+                print(strarray)
 
                     cell.lblCalenderDate.text = strarray[2]
 
+           case 1:
+              
+          
+            cell.lblTittle.text =   attendingConferenceData[indexPath.row]["topic"].stringValue
+            
+            cell.lblDate.text = attendingConferenceData[indexPath.row]["date"].string
+            
+            let strarray = attendingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
 
-                }
-                else  if  collectionView.tag == 1
-                    {
-                         cell.lblTittle.text =   upcomingConferenceData[indexPath.row]["topic"].stringValue
-                                                       
-                        cell.lblDate.text = upcomingConferenceData[indexPath.row]["date"].string
+            print(strarray)
+            
+            cell.lblCalenderDate.text = strarray[2]
+
+            
+        case 2:
+            
+            cell.lblTittle.text = pastconferenceData[indexPath.row]["topic"].stringValue
+            
+            cell.lblDate.text = pastconferenceData[indexPath.row]["date"].string
+            
+        default: break
+            
+            
                
-                        let strarray = upcomingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
-
-                        print(strarray)
-
-                        cell.lblCalenderDate.text = strarray[2]
-
-                    }
-        
-                    else  if  collectionView.tag == 2
-                {
-                    cell.lblTittle.text = pastconferenceData[indexPath.row]["topic"].stringValue
-                    
-                    cell.lblDate.text = pastconferenceData[indexPath.row]["date"].string
         }
-                                   
+     
+       return cell
+       }
   
+  
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            
+                      switch (indexPath.section)
+                      {
+                                 case 0:
+                                  let obj = storyboard?.instantiateViewController(withIdentifier: "ConferenceDetailVC") as! ConferenceDetailVC
 
-                   return cell
-               }
-               
-                
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)
-                   {
-         
-             if collectionView.tag == 0
-                    {
-                        let obj = storyboard?.instantiateViewController(withIdentifier: "ConferenceDetailVC") as! ConferenceDetailVC
+                                   obj.topic = upcomingConferenceData[indexPath.row]["topic"].stringValue
+                                    obj.des = upcomingConferenceData[indexPath.row]["description"].stringValue
+                                  obj.date = upcomingConferenceData[indexPath.row]["date"].stringValue
 
-                         obj.topic = upcomingConferenceData[indexPath.row]["topic"].stringValue
-                          obj.des = upcomingConferenceData[indexPath.row]["description"].stringValue
-                        obj.date = upcomingConferenceData[indexPath.row]["date"].stringValue
-                    
-                        conferenceId = upcomingConferenceData[indexPath.row]["conference_id"].stringValue
-                              
+                                  conferenceId = upcomingConferenceData[indexPath.row]["conference_id"].stringValue
+
+
+
+                                  navigationController?.pushViewController(obj, animated: true)
                             
+                            case 1:
+                                     
+                                 let obj = storyboard?.instantiateViewController(withIdentifier: "CyberMissionsVC") as! CyberMissionsVC
 
-                        navigationController?.pushViewController(obj, animated: true)
-                    }
-                   else if collectionView.tag == 1
-                             {
-                       let obj = storyboard?.instantiateViewController(withIdentifier: "CyberMissionsVC") as! CyberMissionsVC
+                                           obj.tittleName = attendingConferenceData[indexPath.row]["topic"].stringValue
 
-                                 obj.tittleName = upcomingConferenceData[indexPath.row]["topic"].stringValue
+                                           conferenceId = attendingConferenceData[indexPath.row]["conference_id"].stringValue
+
+                                            print(conferenceId)
+
+                                     navigationController?.pushViewController(obj, animated: true)
                                  
-                                 conferenceId = upcomingConferenceData[indexPath.row]["conference_id"].stringValue
-                             
-                                  print(conferenceId)
-                                 
-                           navigationController?.pushViewController(obj, animated: true)
-                            }
-
-                    
+                         default: break
     }
+
+    }
+      
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-               return CGSize(width: self.view.frame.width, height: 90)
-               
-           }
+      func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+            
+    //        view.tintColor = UIColor.lightGray
+            
+            let header = view as! UITableViewHeaderFooterView
+            
+            header.textLabel?.textColor = Colors.HeaderColor
+        }
+  
        //-----------------------------
        // MARK: User Defined Function
        //-----------------------------
@@ -195,25 +227,18 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
     @objc func showScrollBar()
      {
         
-         colUpcomingView.flashScrollIndicators()
+         tblUpcomingView.flashScrollIndicators()
        
         
     
-        colAttendView.flashScrollIndicators()
-        
-       
-        colPastView.flashScrollIndicators()
      }
      @objc func showScrollIndicatorsInContacts()
      {
          UIView.animate(withDuration: 0.0001)
          {
-             self.colUpcomingView.flashScrollIndicators()
+             self.tblUpcomingView.flashScrollIndicators()
             
-            self.colAttendView.flashScrollIndicators()
-         
-            
-            self.colPastView.flashScrollIndicators()
+          
     
          }
      }
@@ -232,7 +257,7 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                       PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
                     }
                 }
-    
+//
     @objc func attendingConferenceInternetAvailable()
            {
                if Connectivity.isConnectedToInternet()
@@ -245,13 +270,13 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                  PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
                }
            }
-      
+
        @objc func pastConferenceInternetAvailable()
        {
            if Connectivity.isConnectedToInternet()
            {
               pastConferenceApi()
-            
+
            }
            else
            {
@@ -278,15 +303,16 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
 
                if Connectivity.isConnectedToInternet()
                {
-                
-                let parameter = ["type":"upcomingConferenceList","attendees_id": UserDefaults.standard.integer(forKey: "attendeesid")] as [String : Any]
+            
+                 let   parameter = ["type":"upcomingConferenceList","attendees_id": UserDefaults.standard.integer(forKey: "attendeesid")] as [String : Any]
 
+                
                 print(parameter)
                    timer.invalidate()
                    self.start()
                 
                 let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
-                   print("upcoming Conference List ==>> " + url)
+                   print("Conference List ==>> " + url)
                    Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
                        {
                            response in
@@ -301,7 +327,7 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                             print(result)
                             if result["status"].boolValue == false
                                {
-                                self.colUpcomingHeight.constant = 0
+//                                self.tblUpcomingView.contentSize.height = 0
                              //    PopUp(Controller: self, title:  "opps!!", message: result["msg"].string!, type: .error, time: 2)
                               
                                    self.stopAnimating()
@@ -310,13 +336,14 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                                {
                                    self.stopAnimating()
 
-                               self.upcomingConferenceData = result["conference_list"]
+                                self.upcomingConferenceData = result["conference_list"]
+                                    print( self.upcomingConferenceData)
+                                                       
+                           
                                 
-                                print( self.upcomingConferenceData)
+                                 self.tblUpcomingView.reloadData()
                                 
-                                 self.colUpcomingView.reloadData()
-                                
-                                self.colAttendView.reloadData()
+                         
                                 
                            
                                }
@@ -333,22 +360,22 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                    PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
                }
            }
-
-     
-
-    
+//
+//
+//
+//
        func attendingConferenceApi()
        {
 
            if Connectivity.isConnectedToInternet()
            {
-            
+
             let parameter = ["type":"attendingConferenceList","attendees_id": UserDefaults.standard.integer(forKey: "attendeesid")] as [String : Any]
 
             print(parameter)
                timer.invalidate()
                self.start()
-            
+
             let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
                print("Attending Conference List ==>> " + url)
                Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
@@ -361,14 +388,14 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                         {
 
                             let result = JSON(response.value!)
-    
+
                         print(result)
                         if result["status"].boolValue == false
                            {
-                             
-                            self.colAttendHeight.constant = 0
+
+
                            //  PopUp(Controller: self, title:  "opps!!", message: result["msg"].string!, type: .error, time: 2)
-                          
+
                                self.stopAnimating()
                            }
                            else
@@ -376,13 +403,13 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                                self.stopAnimating()
 
                            self.attendingConferenceData = result["conference_list"]
-                            
+
                             print( self.attendingConferenceData)
-                            
-                          
-                            self.colAttendView.reloadData()
-                            
-                       
+
+
+                          self.tblUpcomingView.reloadData()
+
+
                            }
                         }
                        case .failure(let error):
@@ -397,23 +424,23 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
            }
        }
-    
-    
-    
-    
-    
+
+
+
+
+
     func pastConferenceApi()
          {
 
              if Connectivity.isConnectedToInternet()
              {
-              
-              let parameter = ["type":"conferenceList","attendees_id": UserDefaults.standard.integer(forKey: "attendeesid")] as [String : Any]
+
+              let parameter = ["type":"pastConferenceList","attendees_id": UserDefaults.standard.integer(forKey: "attendeesid")] as [String : Any]
 
               print(parameter)
                  timer.invalidate()
                  self.start()
-              
+
               let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
                 print("Past Conference List ==>> " + url)
                  Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
@@ -426,13 +453,13 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                           {
 
                               let result = JSON(response.value!)
-      
+
                           print(result)
                           if result["status"].boolValue == false
                              {
-                                 self.colPastHeight.constant = 0
+
                             //   PopUp(Controller: self, title:  "opps!!", message: result["msg"].string!, type: .error, time: 2)
-                            
+
                                  self.stopAnimating()
                              }
                              else
@@ -440,12 +467,12 @@ class ConfrenceVC: UIViewController,UICollectionViewDelegate,UICollectionViewDat
                                  self.stopAnimating()
 
                              self.pastconferenceData = result["conference_list"]
-                              
+
                               print( self.pastconferenceData)
-                              
-                             
-                              self.colPastView.reloadData()
-                              
+
+
+                             self.tblUpcomingView.reloadData()
+
                              }
                           }
                          case .failure(let error):

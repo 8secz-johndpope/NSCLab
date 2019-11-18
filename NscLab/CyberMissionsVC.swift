@@ -119,7 +119,8 @@ class CyberMissionsVC: UIViewController,UICollectionViewDelegate,UICollectionVie
                               {
                                                          
                                   let obj = storyboard?.instantiateViewController(withIdentifier: "AttendeesVC") as! AttendeesVC
-                                                                              
+                                       
+                                   isSpeaker = false
                                 tittleHeader = "ATTENDEES"
                                                                
                                   self.navigationController?.pushViewController(obj, animated: true)
@@ -133,8 +134,11 @@ class CyberMissionsVC: UIViewController,UICollectionViewDelegate,UICollectionVie
                         {
                                                                       
                             let obj = storyboard?.instantiateViewController(withIdentifier: "AttendeesVC") as! AttendeesVC
-                                                                                           
+                                              
+                                isSpeaker = true
                                        tittleHeader = "SPEAKERS"
+                            
+                        
                                                                             
                         self.navigationController?.pushViewController(obj, animated: true)
                                                                                            
@@ -211,7 +215,7 @@ class CyberMissionsVC: UIViewController,UICollectionViewDelegate,UICollectionVie
         
         
         func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-            return CGSize(width: self.view.frame.width/3 - 1, height: self.view.frame.width/3 - 1)
+            return CGSize(width: self.view.frame.width/3 - 1, height: self.view.frame.width/3 + 10)
             
         }
         //

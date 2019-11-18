@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import SwiftyJSON
+import Alamofire
 
-class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDelegate{
+class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate{
 
     //-------------------
     // MARK: Outlets
@@ -18,23 +20,27 @@ class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     @IBOutlet weak var HeaderView: UIView!
     
-  
+    @IBOutlet weak var searchBarHeight: NSLayoutConstraint!
+    
     @IBOutlet weak var searchBar: UISearchBar!
     
         //------------------------
         // MARK: Identifiers
         //------------------------
     
+ var timer = Timer()
+      var sections = [String]()
+ 
+  var attendessData = JSON()
+  var attendessList = JSON()
     
-    var sections = ["A","B","C"]
+     var searchData =  NSMutableArray()
+       
     
-    var items = [
-        
-                ["NSCLab","NSCLab","NSCLab"],
-                ["NSC Lab","NSC Lab","NSC Lab"],
-                 ["NSCLab","NSCLab","NSCLab"]
-    ]
-    
+       
+       var filterData = NSMutableArray()
+       
+       
 
     //------------------------
       // MARK: View Life Cycle
@@ -47,12 +53,13 @@ class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         
         tblView.rowHeight = 80
         
-        searchBar.isHidden = true
+        searchBarHeight.constant = 0
         
-      
+       searchBar.delegate = self
         
         self.tblView.tableFooterView = UIView()
         
+       organizationApi()
         // Do any additional setup after loading the view.
     }
     
@@ -60,60 +67,149 @@ class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
        // MARK: Table View Methods
        //--------------------------
        
-  func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-           
-           return self.sections[section]
-       }
-       
-       func numberOfSections(in tableView: UITableView) -> Int {
-           return self.sections.count
-       }
-      
-          func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String)
           {
-              return items[section].count
+         
+         
+              searchData = searchText.isEmpty ? filterData : (filterData.filter({(text) -> Bool in
+               
+           
+                  let dic = text as! NSDictionary
+                  let tmp: NSString = ( (dic["organization"] as! String)) as NSString
+               
+                print(dic)
+                  let range = tmp.range(of: searchText,options: NSString.CompareOptions.caseInsensitive)
+               
+             
+                  // If dataItem matches the searchText, return true to include it
+                  return range.location != NSNotFound
+              }) as NSArray).mutableCopy() as! NSMutableArray
+              
+            print(searchData)
+            
+            
+            
+              if searchData.count == 0
+              {
+                self.attendessList = JSON([])
+                self.tblView.reloadData()
+                 // tblView.isHidden = true
+               PopUp(Controller: self, title: "Opps!", message: "NO DATA FOUND", type: .error, time: 3)
+              }
+              else
+              {
+                let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+                
+                    
+                     var dateStr = ""
+                     //var finalDic = NSMutableDictionary()
+                     let arr = NSMutableArray()
+                     let finalArray = NSMutableArray()
+                     for i in 0...(sortAttendessArr.count-1)
+                     {
+                         let dic = sortAttendessArr[i] as! NSDictionary
+                         
+                         if i == 0
+                         {
+                            self.sections.removeAll()
+                             self.sections.append((dic["organization"] as! String)[0].capitalized)
+                             dateStr = (dic["organization"] as! String)[0].capitalized
+                             arr.add(dic)
+                             print(arr)
+                         }
+                         else if (dic["organization"] as! String)[0].capitalized == dateStr
+                         {
+                             arr.add(dic)
+                             print(arr)
+                         }
+                         else if (dic["organization"] as! String)[0].capitalized != dateStr
+                         {
+                             
+                             finalArray.add(["char":dateStr, "list": arr.copy()])
+                             print(finalArray)
+                             self.sections.append((dic["organization"] as! String)[0].capitalized)
+                             print(finalArray)
+                             dateStr = (dic["organization"] as! String)[0].capitalized
+                             print(finalArray)
+                             arr.removeAllObjects()
+                             print(finalArray)
+                             arr.add(dic)
+                             print(finalArray)
+                         }
+                         
+                         
+                         if i == sortAttendessArr.count-1
+                         {
+                             finalArray.add(["char":dateStr, "list": arr])
+                             print(finalArray)
+                         }
+                     }
+                     self.attendessList = JSON(finalArray)
+                     print(self.attendessList)
+                     
+                     self.tblView.reloadData()
+                  tblView.isHidden = false
+                
+                  
+                  
+              }
+              
           }
           
-       
-       func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int
+          func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
+              
+              self.searchBar.endEditing(true)
+              
+          }
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
+        return attendessList[section]["char"].stringValue
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return attendessList.count
+    }
+   
+       func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
        {
-           return ([UITableView.indexSearch] + UILocalizedIndexedCollation.current().sectionIndexTitles as NSArray).index(of: title) - 1
+           return attendessList[section]["list"].count
        }
        
+    
+    func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int
+    {
+        return ([UITableView.indexSearch] + UILocalizedIndexedCollation.current().sectionIndexTitles as NSArray).index(of: title) - 1
+    }
+    
 
-       func sectionIndexTitles(for tableView: UITableView) -> [String]?
-       {
-           return sections
-       }
-       
-       func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-           return 44
-       }
+    func sectionIndexTitles(for tableView: UITableView) -> [String]?
+    {
+        return sections
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 44
+    }
+    
+  
+
        
        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
        {
-           let cell =  tableView.dequeueReusableCell(withIdentifier: "tblOrganizationCell") as! tblOrganizationCell
+            let cell =  tableView.dequeueReusableCell(withIdentifier: "tblOrganizationCell") as! tblOrganizationCell
            
 
         
-                cell.lblUserName.text = items[indexPath.section][indexPath.row]
-            
-               
-
+            cell.lblUserName.text = attendessList[indexPath.section]["list"][indexPath.row]["organization"].stringValue
+        
+           
     
            return cell
            
        }
        
        
-       func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-       {
-//           let obj = storyboard?.instantiateViewController(withIdentifier: "ProgramsDetailVC") as! ProgramsDetailVC
-//  
-//           navigationController?.pushViewController(obj, animated: true)
-           
-       }
-       
+ 
 
        
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -135,7 +231,7 @@ class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
        {
            if Connectivity.isConnectedToInternet()
            {
-//               ConferenceApi()
+                organizationApi()
            }
            else
            {
@@ -156,8 +252,7 @@ class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
 
     @IBAction func btnSearchTUI(_ sender: UIButton)
     {
-        searchBar.isHidden = false
-        
+        searchBarHeight.constant = 56
     }
     
        
@@ -173,65 +268,113 @@ class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
        // MARK: Web Service
        //-----------------------
        
-       
-//
-//       func ConferenceApi()
-//       {
-//
-//           if Connectivity.isConnectedToInternet()
-//           {
-//
-//               timer.invalidate()
-//               self.start()
-//               print(appDelegate.ApiBaseUrl + "upcommingEvent")
-//               Alamofire.request( appDelegate.ApiBaseUrl + "upcommingEvent" , method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
-//                   {
-//                       response in
-//                       switch response.result
-//                       {
-//                       case .success:
-//                           print("Upcoming Events")
-//                           let result = response.result.value! as! NSDictionary
-//                           print(result)
-//                           if (result["status"] as! Int) == 0
-//                           {
-//                               self.lblNoEvents.isHidden = true
-//                               PopUp(Controller: self, title: "Error!", message: (result["msg"] as! String))
-//                               self.stopAnimating()
-//                           }
-//                           else
-//                           {
-//                               self.stopAnimating()
-//
-//
-//                               self.upcomingEventData = (result["data"] as! NSArray).mutableCopy() as! NSMutableArray
-//
-//                               if self.upcomingEventData.count == 0
-//                               {
-//                                   self.lblNoEvents.isHidden = false
-//
-//                               }
-//                               else
-//                               {
-//
-//                                   self.lblNoEvents.isHidden = true
-//
-//
-//                               self.tblView.reloadData()
-//                           }
-//                           }
-//                       case .failure(let error):
-//                           print(error)
-//                       }
-//               }
-//
-//           }
-//           else
-//           {
-//               self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.InternetAvailable), userInfo: nil, repeats: true)
-//               PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available")
-//           }
-//       }
+       func organizationApi()
+       {
+
+           if Connectivity.isConnectedToInternet()
+           {
+
+               timer.invalidate()
+            
+               self.start()
+            
+                let parameter = ["type":"organizationList","conference_id":conferenceId] as [String : Any]
+            
+               let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
+               print(url)
+               Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
+                   {
+                       response in
+                       switch response.result
+                       {
+                       case .success:
+                           
+                           self.attendessData = JSON(response.value!)
+                           print(self.attendessData)
+                           if self.attendessData["status"].boolValue == false
+                           {
+                               
+                            PopUp(Controller: self, title: "Error!", message: (self.attendessData["msg"].stringValue), type: .error, time: 2)
+                               self.stopAnimating()
+                           }
+                           else
+                           {
+                                
+                            let attendessArr = (self.attendessData["organization_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                            
+                            
+                            self.searchData = (self.attendessData["organization_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+
+                                                                      
+                                                    
+                            
+                            let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+                       
+                           
+                            var dateStr = ""
+                            //var finalDic = NSMutableDictionary()
+                            let arr = NSMutableArray()
+                            let finalArray = NSMutableArray()
+                            for i in 0...(sortAttendessArr.count-1)
+                            {
+                                let dic = sortAttendessArr[i] as! NSDictionary
+                                
+                                if i == 0
+                                {
+                                    self.sections.append((dic["organization"] as! String)[0].capitalized)
+                                    dateStr = (dic["organization"] as! String)[0].capitalized
+                                    arr.add(dic)
+                                    print(arr)
+                                }
+                                else if (dic["organization"] as! String)[0].capitalized == dateStr
+                                {
+                                    arr.add(dic)
+                                    print(arr)
+                                }
+                                else if (dic["organization"] as! String)[0].capitalized != dateStr
+                                {
+                                    
+                                    finalArray.add(["char":dateStr, "list": arr.copy()])
+                                    print(finalArray)
+                                    self.sections.append((dic["organization"] as! String)[0].capitalized)
+                                    print(finalArray)
+                                    dateStr = (dic["organization"] as! String)[0].capitalized
+                                    print(finalArray)
+                                    arr.removeAllObjects()
+                                    print(finalArray)
+                                    arr.add(dic)
+                                    print(finalArray)
+                                }
+                                
+                                
+                                if i == sortAttendessArr.count-1
+                                {
+                                    finalArray.add(["char":dateStr, "list": arr])
+                                    print(finalArray)
+                                }
+                            }
+                            self.attendessList = JSON(finalArray)
+                            print(self.attendessList)
+                            
+                            self.tblView.reloadData()
+                            
+                            self.filterData = self.searchData
+
+                                self.stopAnimating()
+                               
+                           }
+                       case .failure(let error):
+                           print(error)
+                       }
+               }
+
+           }
+           else
+           {
+               self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.InternetAvailable), userInfo: nil, repeats: true)
+            PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 1)
+           }
+       }
        
 
 }

@@ -83,7 +83,8 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
     
      @IBOutlet weak var btnRegister: UIButton!
     
-        
+    @IBOutlet weak var btnCountry: UIButton!
+    
     @IBOutlet weak var btnDropDown: UIButton!
     
         //-----------------------
@@ -97,7 +98,8 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
         let dropDown = DropDown()
     
         var regiterData = JSON()
-
+        
+        let countryDropDown = DropDown()
      
         //-----------------------
         //MARK: View life cycle
@@ -111,6 +113,8 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
             dropDown.anchorView = btnDropDown
             dropDown.dataSource = ["Proferssor", "Miss", "Sir"]
             
+            countryDropDown.anchorView = btnCountry
+            countryDropDown.dataSource = ["INDIA", "AUSTRALIA", "US", "UK", "CANADA"]
             headerView.backgroundColor = Colors.HeaderColor
         
               
@@ -229,6 +233,56 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
 //            //----------------------------------------------
   
 //            self.hideKeyboardTappedArround()
+            
+            txtSurname.layer.borderColor = UIColor.darkGray.cgColor
+            txtSurname.layer.borderWidth = 1
+            txtSurname.layer.cornerRadius = 5
+            txtSurname.clipsToBounds = true
+            
+            txtGivenName.layer.borderColor = UIColor.darkGray.cgColor
+            txtGivenName.layer.borderWidth = 1
+            txtGivenName.layer.cornerRadius = 5
+            txtGivenName.clipsToBounds = true
+            
+            txtOrganizer.layer.borderColor = UIColor.darkGray.cgColor
+            txtOrganizer.layer.borderWidth = 1
+            txtOrganizer.layer.cornerRadius = 5
+            txtOrganizer.clipsToBounds = true
+            
+            txtEmail.layer.borderColor = UIColor.darkGray.cgColor
+            txtEmail.layer.borderWidth = 1
+            txtEmail.layer.cornerRadius = 5
+            txtEmail.clipsToBounds = true
+            
+            txtPhone.layer.borderColor = UIColor.darkGray.cgColor
+            txtPhone.layer.borderWidth = 1
+            txtPhone.layer.cornerRadius = 5
+            txtPhone.clipsToBounds = true
+            
+            txtWechat.layer.borderColor = UIColor.darkGray.cgColor
+            txtWechat.layer.borderWidth = 1
+            txtWechat.layer.cornerRadius = 5
+            txtWechat.clipsToBounds = true
+            
+            txtCountry.layer.borderColor = UIColor.darkGray.cgColor
+            txtCountry.layer.borderWidth = 1
+            txtCountry.layer.cornerRadius = 5
+            txtCountry.clipsToBounds = true
+            
+            txtSelectTittle.layer.borderColor = UIColor.darkGray.cgColor
+            txtSelectTittle.layer.borderWidth = 1
+            txtSelectTittle.layer.cornerRadius = 5
+            txtSelectTittle.clipsToBounds = true
+            
+            txtPassword.layer.borderColor = UIColor.darkGray.cgColor
+            txtPassword.layer.borderWidth = 1
+            txtPassword.layer.cornerRadius = 5
+            txtPassword.clipsToBounds = true
+            
+            txtConfirmPassword.layer.borderColor = UIColor.darkGray.cgColor
+            txtConfirmPassword.layer.borderWidth = 1
+            txtConfirmPassword.layer.cornerRadius = 5
+            txtConfirmPassword.clipsToBounds = true
      
         }
         
@@ -423,16 +477,16 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
         
     @objc func txtWechatValueChanged()
           {
-              if txtWechat.text == ""
-              {
-                  lblWechat.isHidden = true
-                  lblWechatError.isHidden = false
-              }
-              else
-              {
-                  lblWechat.isHidden = false
-                  lblWechatError.isHidden = true
-              }
+//              if txtWechat.text == ""
+//              {
+//                  lblWechat.isHidden = true
+//                  lblWechatError.isHidden = false
+//              }
+//              else
+//              {
+//                  lblWechat.isHidden = false
+//                  lblWechatError.isHidden = true
+//              }
           }
         
     
@@ -554,10 +608,10 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
                      PopUp(Controller: self, title: "Oops!", message: "Confirm password and password must be same", type: .error, time: 3)
                  }
 
-            else if (txtWechat.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
-            {
-                 PopUp(Controller: self, title: "Oops!", message: "Please fill WechatID", type: .error, time: 3)
-            }
+//            else if (txtWechat.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
+//            {
+//                 PopUp(Controller: self, title: "Oops!", message: "Please fill WechatID", type: .error, time: 3)
+//            }
                 
             else if (txtCountry.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
             {
@@ -574,7 +628,23 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
         
         }
         
-        
+    @IBAction func btnCountryTUI(_ sender: UIButton)
+    {
+        countryDropDown.show()
+
+        countryDropDown.selectionAction = { [unowned self] (index: Int, item: String) in
+            
+          
+            
+        print("Selected item: \(item) at index: \(index)")
+            
+               self.txtCountry.text = item
+            
+            
+           
+        }
+    }
+    
   
         //-----------------------
         //MARK: Web services

@@ -1,22 +1,27 @@
 //
-//  tblPhotoSharingCell.swift
+//  tblUpcomingCell.swift
 //  NscLab
 //
-//  Created by Sanjay Bhatia on 11/11/19.
+//  Created by Sanjay Bhatia on 16/11/19.
 //  Copyright © 2019 Sanjay Bhatia. All rights reserved.
 //
 
 import UIKit
 
-class tblPhotoSharingCell: UITableViewCell {
+class tblUpcomingCell: UITableViewCell {
 
-    @IBOutlet weak var lblDescription: UILabel!
-
-    @IBOutlet weak var imgPhoto: UIImageView!
-    @IBOutlet weak var viewPhoto: UIView!
+    
+    
+    @IBOutlet weak var imgCon: UIImageView!
+    
+    @IBOutlet weak var lblTittle: UILabel!
+    
     @IBOutlet weak var lblDate: UILabel!
-    @IBOutlet weak var lblTime: UILabel!
-    @IBOutlet weak var imgUser: UIImageView!
+    
+
+    
+    @IBOutlet weak var lblCalenderDate: UILabel!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

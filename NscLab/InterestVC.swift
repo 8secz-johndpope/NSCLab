@@ -27,7 +27,8 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
         // MARK: Identifiers
         //-------------------------
      var  keyboardHight = CGFloat()
-        var iPhoneXorNot = 0
+      
+    var iPhoneXorNot = 0
     var interestData = JSON()
     var timer = Timer()
     

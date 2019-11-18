@@ -8,7 +8,8 @@
 
 import UIKit
 
-class MapVC: UIViewController{
+  var searchDataLocation =  NSMutableArray()
+class MapVC: UIViewController,UISearchBarDelegate{
     //-------------------
     // MARK: Outlets
     //-------------------
@@ -27,6 +28,12 @@ class MapVC: UIViewController{
     
     var VC = UIViewController()
     
+    
+    
+       
+    
+       
+       var filterData = NSMutableArray()
     //-----------------------
     // MARK: View Life Cycle
     //-----------------------
@@ -35,7 +42,7 @@ class MapVC: UIViewController{
     {
         super.viewDidLoad()
         
-      
+       searchBar.delegate = self
          btnSegment.layer.borderColor = UIColor.white.cgColor
          btnSegment.layer.borderWidth = 1
          btnSegment.layer.cornerRadius = 6
@@ -67,7 +74,37 @@ class MapVC: UIViewController{
     
     
     
-    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String)
+          {
+         
+         
+              searchDataLocation = searchText.isEmpty ? filterData : (filterData.filter({(text) -> Bool in
+               
+           
+                  let dic = text as! NSDictionary
+                let tmp: NSString = ((dic["address"] as! String as NSString))
+               
+           
+                  let range = tmp.range(of: searchText,options: NSString.CompareOptions.caseInsensitive)
+               
+             
+                  // If dataItem matches the searchText, return true to include it
+                  return range.location != NSNotFound
+              }) as NSArray).mutableCopy() as! NSMutableArray
+              
+              
+              if searchDataLocation.count == 0
+              {
+                
+               PopUp(Controller: self, title: "Opps!", message: "NO DATA FOUND", type: .error, time: 3)
+            }
+          }
+          
+          func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
+              
+              self.searchBar.endEditing(true)
+              
+          }
     
     
     

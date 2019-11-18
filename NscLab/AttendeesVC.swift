@@ -10,20 +10,24 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-var tittleHeader = String()
-class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegate{
+
+class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate{
 
     //-------------------
     // MARK: Outlets
     //-------------------
     
-     @IBOutlet weak var tblView: UITableView!
+
+    @IBOutlet weak var tblView: UITableView!
     
     @IBOutlet weak var HeaderView: UIView!
     
     @IBOutlet weak var lblTittle: UILabel!
     
     @IBOutlet weak var searchBar: UISearchBar!
+    
+    @IBOutlet weak var searchBarHeight: NSLayoutConstraint!
+    
     //------------------------
         // MARK: Identifiers
         //------------------------
@@ -33,21 +37,20 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
     
     var sections = [String]()
     
-    var items = [
-        
-                ["Annika","Govin","Govin Aosschalk"],
-                ["Annika Barton","Govin Aosschalk","Aosschalk"],
-                 ["Annika","Govin Aosschalk","Govin Aosschalk"],
-                  ["Annika Barton","Govin Aosschalk","Aosschalk"],
-                  ["Annika Barton","Govin Aosschalk","Govin Aosschalk"],
-                  ["Annika Barton","Govin Aosschalk","Govin Aosschalk"]
-    ]
+ 
     
-  
-    
-    var addr = ["354 Docland","355 Docland","355 Docland"]
     var attendessData = JSON()
     var attendessList = JSON()
+    
+    
+    var searchData =  NSMutableArray()
+     
+  
+     
+     var filterData = NSMutableArray()
+     
+     var firstNameOrLastNameOrOrg = 0
+
     //------------------------
       // MARK: View Life Cycle
       //------------------------
@@ -61,11 +64,11 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         
         lblTittle.text = tittleHeader
         
-        searchBar.isHidden = true
+        searchBarHeight.constant = 0
         
         self.tblView.tableFooterView = UIView()
         
-        
+         searchBar.delegate = self
         AttendeesAPI()
         // Do any additional setup after loading the view.
     }
@@ -74,6 +77,47 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
        // MARK: Table View Methods
        //--------------------------
        
+    
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String)
+       {
+      
+      
+           searchData = searchText.isEmpty ? filterData : (filterData.filter({(text) -> Bool in
+            
+        
+               let dic = text as! NSDictionary
+               let tmp: NSString = ((dic["givenName"] as! String) + (dic["surname"] as! String) + (dic["organization"] as! String)) as NSString
+            
+        
+               let range = tmp.range(of: searchText,options: NSString.CompareOptions.caseInsensitive)
+            
+          
+               // If dataItem matches the searchText, return true to include it
+               return range.location != NSNotFound
+           }) as NSArray).mutableCopy() as! NSMutableArray
+           
+           
+           if searchData.count == 0
+           {
+             self.attendessList = JSON([])
+             self.tblView.reloadData()
+              // tblView.isHidden = true
+            PopUp(Controller: self, title: "Opps!", message: "NO DATA FOUND", type: .error, time: 3)
+           }
+           else
+           {
+             sortNameWise()
+             
+           }
+           
+       }
+       
+       func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
+           
+           self.searchBar.endEditing(true)
+           
+       }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
         return attendessList[section]["char"].stringValue
@@ -152,6 +196,19 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
        {
            let obj = storyboard?.instantiateViewController(withIdentifier: "ProgPeopleDetailVC") as! ProgPeopleDetailVC
+        
+        if isSpeaker == true
+        {
+            
+            tittleHeader = "SPEAKER DETAIL"
+            obj.speakerId = attendessList[indexPath.section]["list"][indexPath.row]["p_speaker_id"].stringValue
+        }
+        else
+        {
+           
+            tittleHeader = "ATTENDEES DETAIL"
+            obj.attendeesId = attendessList[indexPath.section]["list"][indexPath.row]["attendees_id"].stringValue
+        }
 
            navigationController?.pushViewController(obj, animated: true)
 
@@ -187,7 +244,171 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
        }
        
        
-       
+    func sortNameWise()
+    {
+        if firstNameOrLastNameOrOrg == 0
+        {
+            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+            
+                
+                 var dateStr = ""
+                 //var finalDic = NSMutableDictionary()
+                 let arr = NSMutableArray()
+                 let finalArray = NSMutableArray()
+                 for i in 0...(sortAttendessArr.count-1)
+                 {
+                     let dic = sortAttendessArr[i] as! NSDictionary
+                     
+                     if i == 0
+                     {
+                        self.sections.removeAll()
+                         self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                         dateStr = (dic["givenName"] as! String)[0].capitalized
+                         arr.add(dic)
+                         print(arr)
+                     }
+                     else if (dic["givenName"] as! String)[0].capitalized == dateStr
+                     {
+                         arr.add(dic)
+                         print(arr)
+                     }
+                     else if (dic["givenName"] as! String)[0].capitalized != dateStr
+                     {
+                         
+                         finalArray.add(["char":dateStr, "list": arr.copy()])
+                         print(finalArray)
+                         self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                         print(finalArray)
+                         dateStr = (dic["givenName"] as! String)[0].capitalized
+                         print(finalArray)
+                         arr.removeAllObjects()
+                         print(finalArray)
+                         arr.add(dic)
+                         print(finalArray)
+                     }
+                     
+                     
+                     if i == sortAttendessArr.count-1
+                     {
+                         finalArray.add(["char":dateStr, "list": arr])
+                         print(finalArray)
+                     }
+                 }
+                 self.attendessList = JSON(finalArray)
+                 print(self.attendessList)
+                 
+                 self.tblView.reloadData()
+              tblView.isHidden = false
+        }
+        else if firstNameOrLastNameOrOrg == 1
+        {
+            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["surname"] as! String) < (($1 as! NSDictionary)["surname"] as! String) })
+            
+                
+                 var dateStr = ""
+                 //var finalDic = NSMutableDictionary()
+                 let arr = NSMutableArray()
+                 let finalArray = NSMutableArray()
+                 for i in 0...(sortAttendessArr.count-1)
+                 {
+                     let dic = sortAttendessArr[i] as! NSDictionary
+                     
+                     if i == 0
+                     {
+                        self.sections.removeAll()
+                         self.sections.append((dic["surname"] as! String)[0].capitalized)
+                         dateStr = (dic["surname"] as! String)[0].capitalized
+                         arr.add(dic)
+                         print(arr)
+                     }
+                     else if (dic["surname"] as! String)[0].capitalized == dateStr
+                     {
+                         arr.add(dic)
+                         print(arr)
+                     }
+                     else if (dic["surname"] as! String)[0].capitalized != dateStr
+                     {
+                         
+                         finalArray.add(["char":dateStr, "list": arr.copy()])
+                         print(finalArray)
+                         self.sections.append((dic["surname"] as! String)[0].capitalized)
+                         print(finalArray)
+                         dateStr = (dic["surname"] as! String)[0].capitalized
+                         print(finalArray)
+                         arr.removeAllObjects()
+                         print(finalArray)
+                         arr.add(dic)
+                         print(finalArray)
+                     }
+                     
+                     
+                     if i == sortAttendessArr.count-1
+                     {
+                         finalArray.add(["char":dateStr, "list": arr])
+                         print(finalArray)
+                     }
+                 }
+                 self.attendessList = JSON(finalArray)
+                 print(self.attendessList)
+                 
+                 self.tblView.reloadData()
+              tblView.isHidden = false
+        }
+        else
+        {
+            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+            
+                
+                 var dateStr = ""
+                 //var finalDic = NSMutableDictionary()
+                 let arr = NSMutableArray()
+                 let finalArray = NSMutableArray()
+                 for i in 0...(sortAttendessArr.count-1)
+                 {
+                     let dic = sortAttendessArr[i] as! NSDictionary
+                     
+                     if i == 0
+                     {
+                        self.sections.removeAll()
+                         self.sections.append((dic["organization"] as! String)[0].capitalized)
+                         dateStr = (dic["organization"] as! String)[0].capitalized
+                         arr.add(dic)
+                         print(arr)
+                     }
+                     else if (dic["organization"] as! String)[0].capitalized == dateStr
+                     {
+                         arr.add(dic)
+                         print(arr)
+                     }
+                     else if (dic["organization"] as! String)[0].capitalized != dateStr
+                     {
+                         
+                         finalArray.add(["char":dateStr, "list": arr.copy()])
+                         print(finalArray)
+                         self.sections.append((dic["organization"] as! String)[0].capitalized)
+                         print(finalArray)
+                         dateStr = (dic["organization"] as! String)[0].capitalized
+                         print(finalArray)
+                         arr.removeAllObjects()
+                         print(finalArray)
+                         arr.add(dic)
+                         print(finalArray)
+                     }
+                     
+                     
+                     if i == sortAttendessArr.count-1
+                     {
+                         finalArray.add(["char":dateStr, "list": arr])
+                         print(finalArray)
+                     }
+                 }
+                 self.attendessList = JSON(finalArray)
+                 print(self.attendessList)
+                 
+                 self.tblView.reloadData()
+              tblView.isHidden = false
+        }
+    }
        
        
        //-----------------------
@@ -198,7 +419,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
 
     @IBAction func btnSearchTUI(_ sender: UIButton)
     {
-        searchBar.isHidden = false
+        searchBarHeight.constant = 56
         
     }
     
@@ -215,190 +436,417 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
        
     @IBAction func btnEyeTUI(_ sender: UIButton)
     {
+        
+        
         let actionSheet: UIAlertController = UIAlertController(title: "", message: "", preferredStyle: .actionSheet)
 
         let cancelActionButton = UIAlertAction(title: "Last Name", style: .default) { _ in
             
-            self.start()
+         
+            self.firstNameOrLastNameOrOrg = 1
+    //------ LAST NAME ---------------------------------------------
             
-            let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
-            
-            let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["surname"] as! String) < (($1 as! NSDictionary)["surname"] as! String) })
-            var dateStr = ""
-            //var finalDic = NSMutableDictionary()
-            let arr = NSMutableArray()
-            let finalArray = NSMutableArray()
-            for i in 0...(sortAttendessArr.count-1)
+            if isSpeaker == true
             {
-                let dic = sortAttendessArr[i] as! NSDictionary
-                
-                if i == 0
+                if self.attendessData["status"].bool != false
                 {
-                    self.sections.removeAll()
-                    self.sections.append((dic["surname"] as! String)[0])
-                    dateStr = (dic["surname"] as! String)[0]
-                    arr.add(dic)
-                    print(arr)
-                }
-                else if (dic["surname"] as! String)[0] == dateStr
-                {
-                    arr.add(dic)
-                    print(arr)
-                }
-                else if (dic["surname"] as! String)[0] != dateStr
-                {
+                    self.start()
                     
-                    finalArray.add(["char":dateStr, "list": arr.copy()])
-                    print(finalArray)
-                    self.sections.append((dic["surname"] as! String)[0])
-                    print(finalArray)
-                    dateStr = (dic["surname"] as! String)[0]
-                    print(finalArray)
-                    arr.removeAllObjects()
-                    print(finalArray)
-                    arr.add(dic)
-                    print(finalArray)
+                    let attendessArr = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                                             
+                                             let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["surname"] as! String) < (($1 as! NSDictionary)["surname"] as! String) })
+                                             var dateStr = ""
+                                             //var finalDic = NSMutableDictionary()
+                                             let arr = NSMutableArray()
+                                             let finalArray = NSMutableArray()
+                                             for i in 0...(sortAttendessArr.count-1)
+                                             {
+                                                 let dic = sortAttendessArr[i] as! NSDictionary
+                                                 
+                                                 if i == 0
+                                                 {
+                                                     self.sections.removeAll()
+                                                     self.sections.append((dic["surname"] as! String)[0].capitalized)
+                                                     dateStr = (dic["surname"] as! String)[0].capitalized
+                                                     arr.add(dic)
+                                                     print(arr)
+                                                 }
+                                                 else if (dic["surname"] as! String)[0].capitalized == dateStr
+                                                 {
+                                                     arr.add(dic)
+                                                     print(arr)
+                                                 }
+                                                 else if (dic["surname"] as! String)[0].capitalized != dateStr
+                                                 {
+                                                     
+                                                     finalArray.add(["char":dateStr, "list": arr.copy()])
+                                                     print(finalArray)
+                                                     self.sections.append((dic["surname"] as! String)[0].capitalized)
+                                                     print(finalArray)
+                                                     dateStr = (dic["surname"] as! String)[0].capitalized
+                                                     print(finalArray)
+                                                     arr.removeAllObjects()
+                                                     print(finalArray)
+                                                     arr.add(dic)
+                                                     print(finalArray)
+                                                 }
+                                                 
+                                                 
+                                                 if i == sortAttendessArr.count-1
+                                                 {
+                                                     finalArray.add(["char":dateStr, "list": arr])
+                                                     print(finalArray)
+                                                 }
+                                             }
+                                             self.attendessList = JSON(finalArray)
+                                             print(self.attendessList)
+                                                 
+                                               
+                                             self.tblView.reloadData()
+                                             self.stopAnimating()
                 }
+                 
                 
-                
-                if i == sortAttendessArr.count-1
-                {
-                    finalArray.add(["char":dateStr, "list": arr])
-                    print(finalArray)
-                }
             }
-            self.attendessList = JSON(finalArray)
-            print(self.attendessList)
+            else
+            {
                 
-              
-            self.tblView.reloadData()
-            self.stopAnimating()
+                if self.attendessData["status"].bool != false
+                {
+                    self.start()
+                    let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                              
+                              let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["surname"] as! String) < (($1 as! NSDictionary)["surname"] as! String) })
+                              var dateStr = ""
+                              //var finalDic = NSMutableDictionary()
+                              let arr = NSMutableArray()
+                              let finalArray = NSMutableArray()
+                              for i in 0...(sortAttendessArr.count-1)
+                              {
+                                  let dic = sortAttendessArr[i] as! NSDictionary
+                                  
+                                  if i == 0
+                                  {
+                                      self.sections.removeAll()
+                                      self.sections.append((dic["surname"] as! String)[0].capitalized)
+                                      dateStr = (dic["surname"] as! String)[0].capitalized
+                                      arr.add(dic)
+                                      print(arr)
+                                  }
+                                  else if (dic["surname"] as! String)[0].capitalized == dateStr
+                                  {
+                                      arr.add(dic)
+                                      print(arr)
+                                  }
+                                  else if (dic["surname"] as! String)[0].capitalized != dateStr
+                                  {
+                                      
+                                      finalArray.add(["char":dateStr, "list": arr.copy()])
+                                      print(finalArray)
+                                      self.sections.append((dic["surname"] as! String)[0].capitalized)
+                                      print(finalArray)
+                                      dateStr = (dic["surname"] as! String)[0].capitalized
+                                      print(finalArray)
+                                      arr.removeAllObjects()
+                                      print(finalArray)
+                                      arr.add(dic)
+                                      print(finalArray)
+                                  }
+                                  
+                                  
+                                  if i == sortAttendessArr.count-1
+                                  {
+                                      finalArray.add(["char":dateStr, "list": arr])
+                                      print(finalArray)
+                                  }
+                              }
+                              self.attendessList = JSON(finalArray)
+                              print(self.attendessList)
+                                  
+                                
+                              self.tblView.reloadData()
+                              self.stopAnimating()
+                }
+                 
+            }
+          
             
            }
            actionSheet.addAction(cancelActionButton)
+        
+        
+        
+           //------ FIRST NAME ---------------------------------------------
 
            let saveActionButton = UIAlertAction(title: "First Name", style: .default)
                { _ in
                 
                 
-                self.start()
+              self.firstNameOrLastNameOrOrg = 0
                 
-                let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
-                
-                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
-                var dateStr = ""
-                //var finalDic = NSMutableDictionary()
-                let arr = NSMutableArray()
-                let finalArray = NSMutableArray()
-                for i in 0...(sortAttendessArr.count-1)
+                if isSpeaker == true
                 {
-                    let dic = sortAttendessArr[i] as! NSDictionary
                     
-                    if i == 0
+                    if self.attendessData["status"].bool != false
                     {
-                        self.sections.removeAll()
-                        self.sections.append((dic["givenName"] as! String)[0])
-                        dateStr = (dic["givenName"] as! String)[0]
-                        arr.add(dic)
-                        print(arr)
+                        self.start()
+                        let attendessArr = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                                    
+                                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+                                    var dateStr = ""
+                                    //var finalDic = NSMutableDictionary()
+                                    let arr = NSMutableArray()
+                                    let finalArray = NSMutableArray()
+                                    for i in 0...(sortAttendessArr.count-1)
+                                    {
+                                        let dic = sortAttendessArr[i] as! NSDictionary
+                                        
+                                        if i == 0
+                                        {
+                                            self.sections.removeAll()
+                                            self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                            dateStr = (dic["givenName"] as! String)[0].capitalized
+                                            arr.add(dic)
+                                            print(arr)
+                                        }
+                                        else if (dic["givenName"] as! String)[0].capitalized == dateStr
+                                        {
+                                            arr.add(dic)
+                                            print(arr)
+                                        }
+                                        else if (dic["givenName"] as! String)[0].capitalized != dateStr
+                                        {
+                                            
+                                            finalArray.add(["char":dateStr, "list": arr.copy()])
+                                            print(finalArray)
+                                            self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                            print(finalArray)
+                                            dateStr = (dic["givenName"] as! String)[0].capitalized
+                                            print(finalArray)
+                                            arr.removeAllObjects()
+                                            print(finalArray)
+                                            arr.add(dic)
+                                            print(finalArray)
+                                        }
+                                        
+                                        
+                                        if i == sortAttendessArr.count-1
+                                        {
+                                            finalArray.add(["char":dateStr, "list": arr])
+                                            print(finalArray)
+                                        }
+                                    }
+                                    self.attendessList = JSON(finalArray)
+                                    print(self.attendessList)
+                                        
+                                      
+                                    self.tblView.reloadData()
+                                    self.stopAnimating()
                     }
-                    else if (dic["givenName"] as! String)[0] == dateStr
-                    {
-                        arr.add(dic)
-                        print(arr)
-                    }
-                    else if (dic["givenName"] as! String)[0] != dateStr
-                    {
-                        
-                        finalArray.add(["char":dateStr, "list": arr.copy()])
-                        print(finalArray)
-                        self.sections.append((dic["givenName"] as! String)[0])
-                        print(finalArray)
-                        dateStr = (dic["givenName"] as! String)[0]
-                        print(finalArray)
-                        arr.removeAllObjects()
-                        print(finalArray)
-                        arr.add(dic)
-                        print(finalArray)
-                    }
-                    
-                    
-                    if i == sortAttendessArr.count-1
-                    {
-                        finalArray.add(["char":dateStr, "list": arr])
-                        print(finalArray)
-                    }
+                      
+                                
                 }
-                self.attendessList = JSON(finalArray)
-                print(self.attendessList)
-                    
-                  
-                self.tblView.reloadData()
-                self.stopAnimating()
+                   
+                else
+                {
+                    if self.attendessData["status"].bool != false
+                    {
+                        self.start()
+                        let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                                    
+                                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+                                    var dateStr = ""
+                                    //var finalDic = NSMutableDictionary()
+                                    let arr = NSMutableArray()
+                                    let finalArray = NSMutableArray()
+                                    for i in 0...(sortAttendessArr.count-1)
+                                    {
+                                        let dic = sortAttendessArr[i] as! NSDictionary
+                                        
+                                        if i == 0
+                                        {
+                                            self.sections.removeAll()
+                                            self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                            dateStr = (dic["givenName"] as! String)[0].capitalized
+                                            arr.add(dic)
+                                            print(arr)
+                                        }
+                                        else if (dic["givenName"] as! String)[0].capitalized == dateStr
+                                        {
+                                            arr.add(dic)
+                                            print(arr)
+                                        }
+                                        else if (dic["givenName"] as! String)[0].capitalized != dateStr
+                                        {
+                                            
+                                            finalArray.add(["char":dateStr, "list": arr.copy()])
+                                            print(finalArray)
+                                            self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                            print(finalArray)
+                                            dateStr = (dic["givenName"] as! String)[0].capitalized
+                                            print(finalArray)
+                                            arr.removeAllObjects()
+                                            print(finalArray)
+                                            arr.add(dic)
+                                            print(finalArray)
+                                        }
+                                        
+                                        
+                                        if i == sortAttendessArr.count-1
+                                        {
+                                            finalArray.add(["char":dateStr, "list": arr])
+                                            print(finalArray)
+                                        }
+                                    }
+                                    self.attendessList = JSON(finalArray)
+                                    print(self.attendessList)
+                                        
+                                      
+                                    self.tblView.reloadData()
+                                    self.stopAnimating()
+                    }
+                      
+                                
+                }
                 
+            
                 
            }
            actionSheet.addAction(saveActionButton)
+        
+        
+        
+          //------ ORGANIZATION NAME ---------------------------------------------
 
-           let deleteActionButton = UIAlertAction(title: "Organization", style: .default)
+           let deleteActionButton = UIAlertAction(title: "Organization", style: .destructive)
                { _ in
-                  
-                
-                self.start()
-                
-                let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
-                
-                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
-                var dateStr = ""
-                //var finalDic = NSMutableDictionary()
-                let arr = NSMutableArray()
-                let finalArray = NSMutableArray()
-                for i in 0...(sortAttendessArr.count-1)
+                  self.firstNameOrLastNameOrOrg = 2
+             if isSpeaker == true
+             {
+                if self.attendessData["status"].bool != false
                 {
-                    let dic = sortAttendessArr[i] as! NSDictionary
+                    self.start()
                     
-                    if i == 0
+                    let attendessArr = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                    
+                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+                    var dateStr = ""
+                    //var finalDic = NSMutableDictionary()
+                    let arr = NSMutableArray()
+                    let finalArray = NSMutableArray()
+                    for i in 0...(sortAttendessArr.count-1)
                     {
-                        self.sections.removeAll()
-                        self.sections.append((dic["organization"] as! String)[0])
-                        dateStr = (dic["organization"] as! String)[0]
-                        arr.add(dic)
-                        print(arr)
-                    }
-                    else if (dic["organization"] as! String)[0] == dateStr
-                    {
-                        arr.add(dic)
-                        print(arr)
-                    }
-                    else if (dic["organization"] as! String)[0] != dateStr
-                    {
+                        let dic = sortAttendessArr[i] as! NSDictionary
                         
-                        finalArray.add(["char":dateStr, "list": arr.copy()])
-                        print(finalArray)
-                        self.sections.append((dic["organization"] as! String)[0])
-                        print(finalArray)
-                        dateStr = (dic["organization"] as! String)[0]
-                        print(finalArray)
-                        arr.removeAllObjects()
-                        print(finalArray)
-                        arr.add(dic)
-                        print(finalArray)
+                        if i == 0
+                        {
+                            self.sections.removeAll()
+                            self.sections.append((dic["organization"] as! String)[0].capitalized)
+                            dateStr = (dic["organization"] as! String)[0].capitalized
+                            arr.add(dic)
+                            print(arr)
+                        }
+                        else if (dic["organization"] as! String)[0].capitalized == dateStr
+                        {
+                            arr.add(dic)
+                            print(arr)
+                        }
+                        else if (dic["organization"] as! String)[0].capitalized != dateStr
+                        {
+                            
+                            finalArray.add(["char":dateStr, "list": arr.copy()])
+                            print(finalArray)
+                            self.sections.append((dic["organization"] as! String)[0].capitalized)
+                            print(finalArray)
+                            dateStr = (dic["organization"] as! String)[0].capitalized
+                            print(finalArray)
+                            arr.removeAllObjects()
+                            print(finalArray)
+                            arr.add(dic)
+                            print(finalArray)
+                        }
+                        
+                        
+                        if i == sortAttendessArr.count-1
+                        {
+                            finalArray.add(["char":dateStr, "list": arr])
+                            print(finalArray)
+                        }
                     }
-                    
-                    
-                    if i == sortAttendessArr.count-1
-                    {
-                        finalArray.add(["char":dateStr, "list": arr])
-                        print(finalArray)
-                    }
+                    self.attendessList = JSON(finalArray)
+                    print(self.attendessList)
+                        
+                      
+                    self.tblView.reloadData()
+                    self.stopAnimating()
                 }
-                self.attendessList = JSON(finalArray)
-                print(self.attendessList)
-                    
-                  
-                self.tblView.reloadData()
-                self.stopAnimating()
                 
+                           
+                }
+                else
+             {
+                
+                if self.attendessData["status"].bool != false
+                {
+                    self.start()
+                    
+                    let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                    
+                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+                    var dateStr = ""
+                    //var finalDic = NSMutableDictionary()
+                    let arr = NSMutableArray()
+                    let finalArray = NSMutableArray()
+                    for i in 0...(sortAttendessArr.count-1)
+                    {
+                        let dic = sortAttendessArr[i] as! NSDictionary
+                        
+                        if i == 0
+                        {
+                            self.sections.removeAll()
+                            self.sections.append((dic["organization"] as! String)[0].capitalized)
+                            dateStr = (dic["organization"] as! String)[0].capitalized
+                            arr.add(dic)
+                            print(arr)
+                        }
+                        else if (dic["organization"] as! String)[0].capitalized == dateStr
+                        {
+                            arr.add(dic)
+                            print(arr)
+                        }
+                        else if (dic["organization"] as! String)[0].capitalized != dateStr
+                        {
+                            
+                            finalArray.add(["char":dateStr, "list": arr.copy()])
+                            print(finalArray)
+                            self.sections.append((dic["organization"] as! String)[0].capitalized)
+                            print(finalArray)
+                            dateStr = (dic["organization"] as! String)[0].capitalized
+                            print(finalArray)
+                            arr.removeAllObjects()
+                            print(finalArray)
+                            arr.add(dic)
+                            print(finalArray)
+                        }
+                        
+                        
+                        if i == sortAttendessArr.count-1
+                        {
+                            finalArray.add(["char":dateStr, "list": arr])
+                            print(finalArray)
+                        }
+                    }
+                    self.attendessList = JSON(finalArray)
+                    print(self.attendessList)
+                        
+                      
+                    self.tblView.reloadData()
+                    self.stopAnimating()
+                }
+                
+                           
+                }
+           
                 
            }
            actionSheet.addAction(deleteActionButton)
@@ -424,8 +872,18 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                timer.invalidate()
             
                self.start()
+            var parameter = [String : Any]()
             
-                let parameter = ["type":"attendeesList","conference_id":conferenceId] as [String : Any]
+            if isSpeaker == true
+            {
+                 parameter = ["type":"speakerList","conference_id":conferenceId] as [String : Any]
+            }
+            else
+            {
+                  parameter = ["type":"attendeesList","conference_id":conferenceId] as [String : Any]
+            }
+            
+          
             
                let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
                print(url)
@@ -435,10 +893,11 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                        switch response.result
                        {
                        case .success:
-                           print("Upcoming Events")
-                           //let result = JSON(response.value!)
+                           
                            self.attendessData = JSON(response.value!)
+                          
                            print(self.attendessData)
+                        
                            if self.attendessData["status"].boolValue == false
                            {
                                
@@ -447,58 +906,144 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                            }
                            else
                            {
-                                
-                            let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                             
-                            let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
-                            var dateStr = ""
-                            //var finalDic = NSMutableDictionary()
-                            let arr = NSMutableArray()
-                            let finalArray = NSMutableArray()
-                            for i in 0...(sortAttendessArr.count-1)
+                            
+                              self.stopAnimating()
+                            
+                            
+                          
+                            
+                            if isSpeaker == true
                             {
-                                let dic = sortAttendessArr[i] as! NSDictionary
-                                
-                                if i == 0
-                                {
-                                    self.sections.append((dic["givenName"] as! String)[0])
-                                    dateStr = (dic["givenName"] as! String)[0]
-                                    arr.add(dic)
-                                    print(arr)
-                                }
-                                else if (dic["givenName"] as! String)[0] == dateStr
-                                {
-                                    arr.add(dic)
-                                    print(arr)
-                                }
-                                else if (dic["givenName"] as! String)[0] != dateStr
-                                {
-                                    
-                                    finalArray.add(["char":dateStr, "list": arr.copy()])
-                                    print(finalArray)
-                                    self.sections.append((dic["givenName"] as! String)[0])
-                                    print(finalArray)
-                                    dateStr = (dic["givenName"] as! String)[0]
-                                    print(finalArray)
-                                    arr.removeAllObjects()
-                                    print(finalArray)
-                                    arr.add(dic)
-                                    print(finalArray)
-                                }
+                                let attendessArr = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                                                         
+                                                       
+                                self.searchData = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                                 
                                 
-                                if i == sortAttendessArr.count-1
-                                {
-                                    finalArray.add(["char":dateStr, "list": arr])
-                                    print(finalArray)
-                                }
+                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+                                                 
+                                                     
+                                                      var dateStr = ""
+                                                      //var finalDic = NSMutableDictionary()
+                                                      let arr = NSMutableArray()
+                                                      let finalArray = NSMutableArray()
+                                                      for i in 0...(sortAttendessArr.count-1)
+                                                      {
+                                                          let dic = sortAttendessArr[i] as! NSDictionary
+                                                          
+                                                          if i == 0
+                                                          {
+                                                              self.sections.append((dic["givenName"] as! String)[0])
+                                                              dateStr = (dic["givenName"] as! String)[0]
+                                                              arr.add(dic)
+                                                              print(arr)
+                                                          }
+                                                          else if (dic["givenName"] as! String)[0] == dateStr
+                                                          {
+                                                              arr.add(dic)
+                                                              print(arr)
+                                                          }
+                                                          else if (dic["givenName"] as! String)[0] != dateStr
+                                                          {
+                                                              
+                                                              finalArray.add(["char":dateStr, "list": arr.copy()])
+                                                              print(finalArray)
+                                                              self.sections.append((dic["givenName"] as! String)[0])
+                                                              print(finalArray)
+                                                              dateStr = (dic["givenName"] as! String)[0]
+                                                              print(finalArray)
+                                                              arr.removeAllObjects()
+                                                              print(finalArray)
+                                                              arr.add(dic)
+                                                              print(finalArray)
+                                                          }
+                                                          
+                                                          
+                                                          if i == sortAttendessArr.count-1
+                                                          {
+                                                              finalArray.add(["char":dateStr, "list": arr])
+                                                              print(finalArray)
+                                                          }
+                                                      }
+                                                      self.attendessList = JSON(finalArray)
+                                                      print(self.attendessList)
+                                                          
+                                                        
                             }
-                            self.attendessList = JSON(finalArray)
-                            print(self.attendessList)
+                            else
+                            {
+                                let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
+                                                           
+                                                          
+                                self.searchData = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                                 
-                              
+                                
+                             
+                                
+                                
+                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+                                                 
+                                                     
+                                                      var dateStr = ""
+                                                      //var finalDic = NSMutableDictionary()
+                                                      let arr = NSMutableArray()
+                                                      let finalArray = NSMutableArray()
+                                                      for i in 0...(sortAttendessArr.count-1)
+                                                      {
+                                                          let dic = sortAttendessArr[i] as! NSDictionary
+                                                          
+                                                          if i == 0
+                                                          {
+                                                              self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                                              dateStr = (dic["givenName"] as! String)[0].capitalized
+                                                              arr.add(dic)
+                                                              print(arr)
+                                                          }
+                                                          else if (dic["givenName"] as! String)[0].capitalized == dateStr
+                                                          {
+                                                              arr.add(dic)
+                                                              print(arr)
+                                                          }
+                                                          else if (dic["givenName"] as! String)[0].capitalized != dateStr
+                                                          {
+                                                              
+                                                              finalArray.add(["char":dateStr, "list": arr.copy()])
+                                                              print(finalArray)
+                                                              self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                                              
+                                                            dateStr = (dic["givenName"] as! String)[0].capitalized
+                                                              
+                                                              arr.removeAllObjects()
+                                                              
+                                                              arr.add(dic)
+                                                              
+                                                          }
+                                                          
+                                                          
+                                                          if i == sortAttendessArr.count-1
+                                                          {
+                                                              finalArray.add(["char":dateStr, "list": arr])
+                                                              print(finalArray)
+                                                          }
+                                                      }
+                                                      self.attendessList = JSON(finalArray)
+                                                      print(self.attendessList)
+                                                          
+                                                        
+
+                                                                            
+                            }
+                                
+                           
+                       
+
+                            
+                      
                             self.tblView.reloadData()
-                                self.stopAnimating()
+                            
+                                 self.filterData = self.searchData
+                              
                                
                            }
                        case .failure(let error):

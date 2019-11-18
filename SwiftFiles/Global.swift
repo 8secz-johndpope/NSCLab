@@ -11,4 +11,7 @@ import CoreLocation
 import SwiftyJSON
 
 var conferenceId = String()
+var isSpeaker = false
+var tittleHeader = String()
+var path = String()
 

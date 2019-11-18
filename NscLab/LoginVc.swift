@@ -98,7 +98,7 @@ class LoginVc: UIViewController ,UITextFieldDelegate
         
             txtEmailAddress.layer.borderColor = UIColor.darkGray.cgColor
             txtEmailAddress.layer.borderWidth = 1
-              txtEmailAddress.layer.cornerRadius = 2
+              txtEmailAddress.layer.cornerRadius = 5
               txtEmailAddress.clipsToBounds = true
        
         
@@ -122,7 +122,7 @@ class LoginVc: UIViewController ,UITextFieldDelegate
         
         txtPassword.layer.borderColor = UIColor.darkGray.cgColor
         txtPassword.layer.borderWidth = 1
-        txtPassword.layer.cornerRadius = 2
+        txtPassword.layer.cornerRadius = 5
         txtPassword.clipsToBounds = true
             
         //----------------------------------------------

@@ -7,10 +7,14 @@
 //
 
 import UIKit
+import Alamofire
+import SwiftyJSON
 
 
 class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource {
 
+    
+    
   
     @IBOutlet weak var txtField: UITextField!
     
@@ -23,23 +27,23 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
    @IBOutlet weak var lblTitle: UILabel!
     
    @IBOutlet weak var HeaderView: UIView!
+    
+    
     //-------------------------
     // MARK: Identifiers
     //-------------------------
     
-    
-    
-   var tittleName = String()
+    var tittleName = String()
     var timer = Timer()
     var tym = String()
     var toId = Int()
-    var chatsData  = NSMutableArray()
+    var chatsData  = JSON()
     var  keyboardHight = CGFloat()
           var iPhoneXorNot = 0
     var msgSend = ["Hi How Are You..","When to Meet ??"]
     var msgRecive = ["I am fine."," 2:30 PM would be good ??"]
     var time = ["10:00 AM","10:05 AM"]
-    
+    var messageId = String()
    
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,7 +79,7 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
     
     {
         
-//        ChatsApi()
+        ChatsApi()
     }
     
     //------------------------------------
@@ -155,7 +159,7 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
 //                   cell.viewImage.clipsToBounds = true
 //                
 //        }
-            return cell
+            
 //        }
     }
     
@@ -270,19 +274,19 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
     
     
     
-//    @objc func ChatsInternetAvailable()
-//    {
-//        if Connectivity.isConnectedToInternet()
-//        {
-//            ChatsApi()
-//
-//        }
-//        else
-//        {
-//            self.stopAnimating()
-//            PopUp(Controller: self, title: "Internet Connectivity", message: "Internet not available")
-//        }
-//    }
+    @objc func InternetAvailable()
+    {
+        if Connectivity.isConnectedToInternet()
+        {
+            ChatsApi()
+
+        }
+        else
+        {
+            self.stopAnimating()
+            PopUp(Controller: self, title: "Internet Connectivity", message: "Internet not available", type: .error, time: 1)
+        }
+    }
 //
     //------------------------------------
     //MARK: Button Actions
@@ -403,68 +407,64 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
 //
 //
 //
-//    func ChatsApi()
-//    {
-//
-//        let parameter = ["chat_id": chatId] as [String : Any]
-//
-//        if Connectivity.isConnectedToInternet()
-//        {
-//            timer.invalidate()
-//            self.start()
-//
-//            print( "Chats ==>" + appDelegate.ApiBaseUrl + "chat")
-//
-//            Alamofire.request(appDelegate.ApiBaseUrl + "chat", method: .post, parameters: parameter, encoding: JSONEncoding.default, headers: nil).validate().responseJSON(completionHandler: { response in
-//
-//                switch response.result
-//                {
-//
-//                case .success(_):
-//
-//
-//                    let result = response.result.value as! NSDictionary
-//
-//                    print(result)
-//
-//                    if (result["status"] as! Int) == 0
-//                    {
-//
-//
-//                        print("Error")
-//
-//                        self.stopAnimating()
-//
-//                    }
-//                    else
-//                    {
-//
-//                        self.stopAnimating()
-//
-//
-//                        self.chatsData =  (result["chat"] as! NSArray).mutableCopy() as! NSMutableArray
-//
-//
-//
-//                        self.tblChat.reloadData()
-//                        self.tblChat.scrollToRow(at: IndexPath(row: self.chatsData.count-1, section: 0), at: .bottom, animated: false)
-//                    }
-//                case .failure(let error):
-//                    print(error)
-//                }
-//
-//            })
-//
-//        }
-//
-//        else
-//        {
-//            self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.ChatsInternetAvailable), userInfo: nil, repeats: true)
-//            PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available")
-//        }
-//
-//    }
-//
+    func ChatsApi()
+    {
+
+        if Connectivity.isConnectedToInternet()
+        {
+
+            let parameter = ["type":"messageNotificationList","attendees_id":/*UserDefaults.standard.integer(forKey: "attendeesid")*/18, "messages_id": messageId] as [String : Any]
+
+         print(parameter)
+            timer.invalidate()
+            self.start()
+
+         let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
+            print(url)
+            Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
+                {
+                    response in
+                    switch response.result
+                    {
+                    case .success:
+                     if response.response?.statusCode == 200
+                     {
+
+                         let result = JSON(response.value!)
+
+                     print(result)
+                     if result["status"].boolValue == false
+                        {
+
+                          PopUp(Controller: self, title:  "Error!", message: result["msg"].stringValue, type: .error, time: 2)
+
+                            self.stopAnimating()
+                        }
+                        else
+                        {
+                            self.stopAnimating()
+
+                           self.chatsData = result["message_list"]
+                           
+                         
+                           self.tblChat.reloadData()
+
+                        }
+                     }
+                    case .failure(let error):
+                        print(error)
+                    }
+            }
+
+        }
+        else
+        {
+            self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.InternetAvailable), userInfo: nil, repeats: true)
+            PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+        }
+
+    }
+
     
     
 }

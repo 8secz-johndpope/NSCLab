@@ -7,8 +7,11 @@
 //
 
 import UIKit
+import Alamofire
+import SwiftyJSON
+import SDWebImage
 
-class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource {
+class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource,UIImagePickerControllerDelegate, UINavigationControllerDelegate  {
 
   
     @IBOutlet weak var txtField: UITextField!
@@ -18,7 +21,7 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
     @IBOutlet weak var messageView: UIView!
     
     @IBOutlet weak var viewBtn: UIView!
-    
+
     
    @IBOutlet weak var HeaderView: UIView!
     
@@ -29,7 +32,9 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
     //-------------------------
    var  keyboardHight = CGFloat()
      var iPhoneXorNot = 0
-    var sharingData = [UIImage(named: "icon"),UIImage(named: "icon"),UIImage(named: "icon")]
+    var sharingData = JSON()
+    var timer = Timer()
+    var UploadImage = UIImage()
 
     //-------------------------
      // MARK: View Life Cycle
@@ -65,7 +70,10 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
         
     }
     
-  
+  override func viewWillAppear(_ animated: Bool)
+    {
+          photoSharingApi()
+    }
     
     //------------------------------------
     //MARK: Delegate method
@@ -88,8 +96,18 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
             let cell = tblChat.dequeueReusableCell(withIdentifier: "tblPhotoSharingCell") as! tblPhotoSharingCell
 
    
-        cell.imgPhoto.image = sharingData[indexPath.row]
+        cell.imgPhoto.sd_setImage(with: URL(string: "http://" + (sharingData[indexPath.row]["photoPath"].stringValue)), placeholderImage: UIImage(named: "logo"), options: .refreshCached, completed: nil)
+    
+        print( "http://" + (sharingData[indexPath.row]["photoPath"].stringValue))
+       
+        cell.lblDescription.text = sharingData[indexPath.row]["description"].stringValue
+    
         
+        cell.imgUser.sd_setImage(with: URL(string: "http://" + (sharingData[indexPath.row]["profileImage"].stringValue)), placeholderImage: UIImage(named: "logo"), options: .refreshCached, completed: nil)
+        
+        cell.lblDate.isHidden = true
+    
+        cell.lblTime.isHidden = true
         
         cell.imgUser.layer.masksToBounds = false
         cell.imgUser.layer.cornerRadius =  cell.imgUser.frame.height/2
@@ -113,12 +131,48 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
         return true
     }
     
-    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any])
+      {
+          if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+              dismiss(animated: true, completion: nil)
+              self.UploadImage = image
+              
+              uploadImage()
+             
+          } else{
+              print("Something went wrong in  image")
+          }
+      }
+      
     
     //------------------------------------
     //MARK: User Define Function
     //------------------------------------
     
+    func openCamera()
+      {
+          if UIImagePickerController.isSourceTypeAvailable(.camera)
+          {
+              let myPickerController = UIImagePickerController()
+              myPickerController.delegate = self
+              myPickerController.sourceType = .camera
+              self.present(myPickerController, animated: true, completion: nil)
+          }
+      }
+      
+      func photoLibrary()
+      {
+          if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+              let myPickerController = UIImagePickerController()
+              myPickerController.delegate = self
+              myPickerController.sourceType = .photoLibrary
+              self.present(myPickerController, animated: true, completion: nil)
+          }
+      }
+    
+    
+    
+ 
     @objc func keyboardWillShow(notification: NSNotification)
     {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
@@ -200,6 +254,33 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
         }
     
     }
+    
+    @objc func UploadImageInternetAvailable()
+            {
+                if Connectivity.isConnectedToInternet()
+                {
+                   uploadImage()
+                }
+                else
+                {
+                    self.stopAnimating()
+                   PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+                }
+            }
+    
+    
+    @objc func InternetAvailable()
+            {
+                if Connectivity.isConnectedToInternet()
+                {
+                  photoSharingApi()
+                }
+                else
+                {
+                    self.stopAnimating()
+                   PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+                }
+            }
 
     //------------------------------------
     //MARK: Button Actions
@@ -211,9 +292,200 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
         navigationController?.popViewController(animated: true)
     }
     
+    @IBAction func btnShareTUI(_ sender: UIButton)
+    {
+        let actionSheet = UIAlertController(title: "Choose", message: "Choose a option", preferredStyle: .actionSheet)
+                  
+          //        actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (action) -> Void in
+          //
+          //            self.openCamera()
+          //        }))
+                  
+                  actionSheet.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { (action) -> Void in
+                      self.photoLibrary()
+                  }))
+                  
+                  
+                 
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                     
+          actionSheet.popoverPresentationController?.sourceView = self.view
+                                        
+            
+          actionSheet.popoverPresentationController?.sourceRect = sender.frame
+                                
+          self.present(actionSheet, animated: true, completion: nil)
+                  
+    }
+    
+    
     
     //------------------------------------
     //MARK:Web services
     //------------------------------------
 
+     func uploadImage()
+          {
+            
+            var parameter = [String : Any]()
+            
+            parameter = ["type":"sharing","attendees_id":UserDefaults.standard.integer(forKey: "attendeesid"),"conference_id": conferenceId,"description":txtField.text!]
+            
+            
+            let url = appDelegate.ApiImageUrl + parameterConvert(pram: parameter)
+                             
+            print(url)
+              let image = self.UploadImage
+            let imgData = image.jpegData(compressionQuality: 0.50)
+              print(imgData)
+              
+             
+              if Connectivity.isConnectedToInternet()
+              {
+                 
+                  timer.invalidate()
+                  Alamofire.upload(multipartFormData: { multipartFormData in
+                      
+                      multipartFormData.append(imgData!, withName: "fileUpload",fileName: "file.jpg", mimeType: "image/jpg")
+                      
+                      
+                      
+                  },to: url )
+                  { (result) in
+                      switch result {
+                      case .success(let upload, _, _):
+                          
+                          
+                          upload.uploadProgress(closure: { (progress) in
+                              
+                              
+    //                          print("Upload Progress: \(progress.fractionCompleted)")
+                              
+                              
+    //                          self.uploadingView.isHidden = false
+    //
+    //                          self.uploadProgressView.progress = Float(progress.fractionCompleted)
+    //
+                              
+    //                          print("Upload Progress: \(progress.fractionCompleted)")
+                              
+                              
+                              
+    //                          let progressPercent = Int(progress.fractionCompleted*100)
+                              
+    //                          self.lblProgressCount.text = "\(progressPercent)%"
+                              
+                              
+                              
+                              
+                          })
+                          
+                          upload.responseJSON { response in
+                              print(response.result.value!)
+                              let result = response.result.value! as! NSDictionary
+                              if (result["success"] as! Int) == 0
+                              {
+                                 
+                                 
+                                PopUp(Controller: self, title: "oops!", message: (result["msg"] as! String), type: .error, time: 2)
+                              }
+                              else
+                              {
+                                  
+                                  print(result)
+                                  
+                                PopUp(Controller: self, title: "Done", message: (result["msg"] as! String), type: .error, time: 2)
+                                
+    //                              self.editImage = (result["image"] as! String)
+    //
+    //
+    //
+    //                              self.uploadingView.isHidden = true
+                                self.photoSharingApi()
+                                
+                          
+                              }
+                              
+                          }
+                          
+                      case .failure(let encodingError):
+                          print(encodingError)
+                      }
+                  }
+              }
+              else
+              {
+                  self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.UploadImageInternetAvailable), userInfo: nil, repeats: true)
+                 PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+              }
+              
+          }
+    
+    
+    
+     func photoSharingApi()
+                {
+
+                    if Connectivity.isConnectedToInternet()
+                    {
+
+                      let parameter = ["type":"photoSharingList","conference_id":conferenceId] as [String : Any]
+
+                     print(parameter)
+                        timer.invalidate()
+                        self.start()
+
+                     let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
+                        print(url)
+                        Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
+                            {
+                                response in
+                                switch response.result
+                                {
+                                case .success:
+                                 if response.response?.statusCode == 200
+                                 {
+
+                                     let result = JSON(response.value!)
+
+                                 print(result)
+                                 if result["status"].boolValue == false
+                                    {
+
+                                      PopUp(Controller: self, title:  "Error!", message: self.sharingData["msg"].stringValue, type: .error, time: 2)
+
+                                        self.stopAnimating()
+                                    }
+                                    else
+                                    {
+                                        self.stopAnimating()
+
+                                 self.sharingData = result["photosharing_list"]
+                                     
+                                 
+                                     
+                                     print(self.sharingData)
+                                     
+                                     self.tblChat.reloadData()
+                         
+       
+
+                                    }
+                                 }
+                                case .failure(let error):
+                                    print(error)
+                                }
+                        }
+
+                    }
+                    else
+                    {
+                        self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.InternetAvailable), userInfo: nil, repeats: true)
+                        PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+                    }
+                }
+         
+    
+    
+    
 }

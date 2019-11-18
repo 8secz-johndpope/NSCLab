@@ -87,8 +87,9 @@ class MapListVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
 
         obj.locationName = mapListData[indexPath.row]["address"].stringValue
 
-        navigationController?.pushViewController(obj, animated: true)
+//        navigationController?.pushViewController(obj, animated: true)
 
+         present(obj, animated: true)
       
     }
    
@@ -155,6 +156,7 @@ class MapListVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
 
                                     self.mapListData = result["location_list"]
                                     
+                             searchDataLocation =  (result["location_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                                     
 
                                     self.tblMapListView.reloadData()

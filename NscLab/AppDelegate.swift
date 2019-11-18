@@ -20,6 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       var window: UIWindow?
 
      var ApiBaseUrl = "http://ausnsclab.esy.es/api/api.php"
+    
+  var ApiImageUrl = "http://ausnsclab.esy.es/api/upload_image.php"
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         

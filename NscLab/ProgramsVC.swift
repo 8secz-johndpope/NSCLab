@@ -27,10 +27,7 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
     
     var timer = Timer()
     var programData = JSON()
-    var programId = String()
-    
-    var sections = ["2019-11-13","2019-11-15"]
-
+    var programId = String()    
     var programList = JSON()
     //------------------------
       // MARK: View Life Cycle
@@ -100,16 +97,16 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
        {
            let obj = storyboard?.instantiateViewController(withIdentifier: "ProgramDetailVC") as! ProgramDetailVC
         
-        obj.tittleName = programData[indexPath.row]["topic"].stringValue
+        obj.tittleName = programList[indexPath.section]["list"][indexPath.row]["topic"].stringValue
         
-        obj.date = programData[indexPath.row]["toDate"].stringValue + " - " + programData[indexPath.row]["from_date"].stringValue
+        obj.date = programList[indexPath.section]["list"][indexPath.row]["toDate"].stringValue + " - " + programList[indexPath.section]["list"][indexPath.row]["from_date"].stringValue
         
-        obj.time = programData[indexPath.row]["toTime"].stringValue  + " - " + programData[indexPath.row]["fromTime"].stringValue
-        obj.desc = programData[indexPath.row]["description"].stringValue
+        obj.time = programList[indexPath.section]["list"][indexPath.row]["toTime"].stringValue  + " - " + programList[indexPath.section]["list"][indexPath.row]["fromTime"].stringValue
+        obj.desc = programList[indexPath.section]["list"][indexPath.row]["description"].stringValue
         
-        obj.addr = programData[indexPath.row]["address"].stringValue
+        obj.addr = programList[indexPath.section]["list"][indexPath.row]["address"].stringValue
         
-        obj.programId = programData[indexPath.row]["program_id"].stringValue
+        obj.programId = programList[indexPath.section]["list"][indexPath.row]["program_id"].stringValue
   
            navigationController?.pushViewController(obj, animated: true)
            
