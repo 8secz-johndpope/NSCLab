@@ -20,9 +20,9 @@ func PopUp(Controller: UIViewController, title: String, message: String, type: M
 {
 //    SwiftMessageBar.showMessage(withTitle: title, message: message, type: type)
     SwiftMessageBar.showMessage(withTitle: title, message: message, type: type, duration: time)
-    //    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-    //    alert.addAction(UIAlertAction(title: "ok", style: .default, handler: nil))
-    //    Controller.present(alert, animated: true, completion: nil)
+//        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+//        Controller.present(alert, animated: true, completion: nil)
 }
 func parameterConvert(pram: [String : Any]) -> String
 {

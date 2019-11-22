@@ -308,7 +308,7 @@ class OrganizationsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
                                                                       
                                                     
                             
-                            let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+                            let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String).capitalized < (($1 as! NSDictionary)["organization"] as! String).capitalized })
                        
                            
                             var dateStr = ""

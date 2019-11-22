@@ -98,6 +98,15 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
         cell.lblInterest.layer.cornerRadius = 20
                    
         cell.lblInterest.clipsToBounds = true
+        
+        if interestData.count == 1
+        {
+            cell.btnRemove.isHidden = true
+        }
+        else
+        {
+            cell.btnRemove.isHidden = false
+        }
                 
           
         return cell
@@ -334,7 +343,7 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
                                 if result["status"].boolValue == false
                                    {
 
-                                     PopUp(Controller: self, title:  "Error!", message: self.interestData["msg"].stringValue, type: .error, time: 2)
+                                     //PopUp(Controller: self, title:  "Error!", message: self.interestData["msg"].stringValue, type: .error, time: 2)
 
                                        self.stopAnimating()
                                    }

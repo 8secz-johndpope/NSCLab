@@ -50,7 +50,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
      
      var filterData = NSMutableArray()
      
-     var firstNameOrLastNameOrOrg = 0
+     var firstNameOrLastNameOrOrg = 2
 
     //------------------------
       // MARK: View Life Cycle
@@ -930,7 +930,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                                 self.searchData = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                                 
                                 
-                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String).capitalized < (($1 as! NSDictionary)["givenName"] as! String).capitalized })
+                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String).capitalized < (($1 as! NSDictionary)["organization"] as! String).capitalized })
                                                  
                                                      
                                                       var dateStr = ""
@@ -943,24 +943,24 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                                                           
                                                           if i == 0
                                                           {
-                                                              self.sections.append((dic["givenName"] as! String)[0].capitalized)
-                                                              dateStr = (dic["givenName"] as! String)[0].capitalized
+                                                              self.sections.append((dic["organization"] as! String)[0].capitalized)
+                                                              dateStr = (dic["organization"] as! String)[0].capitalized
                                                               arr.add(dic)
                                                               print(arr)
                                                           }
-                                                          else if (dic["givenName"] as! String)[0].capitalized == dateStr
+                                                          else if (dic["organization"] as! String)[0].capitalized == dateStr
                                                           {
                                                               arr.add(dic)
                                                               print(arr)
                                                           }
-                                                          else if (dic["givenName"] as! String)[0].capitalized != dateStr
+                                                          else if (dic["organization"] as! String)[0].capitalized != dateStr
                                                           {
                                                               
                                                               finalArray.add(["char":dateStr, "list": arr.copy()])
                                                               print(finalArray)
-                                                              self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                                              self.sections.append((dic["organization"] as! String)[0].capitalized)
                                                               print(finalArray)
-                                                              dateStr = (dic["givenName"] as! String)[0].capitalized
+                                                              dateStr = (dic["organization"] as! String)[0].capitalized
                                                               print(finalArray)
                                                               arr.removeAllObjects()
                                                               print(finalArray)
@@ -991,7 +991,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                              
                                 
                                 
-                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String).capitalized < (($1 as! NSDictionary)["givenName"] as! String).capitalized })
+                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String).capitalized < (($1 as! NSDictionary)["organization"] as! String).capitalized })
                                                  
                                                      
                                                       var dateStr = ""
@@ -1004,24 +1004,24 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                                                           
                                                           if i == 0
                                                           {
-                                                              self.sections.append((dic["givenName"] as! String)[0].capitalized)
-                                                              dateStr = (dic["givenName"] as! String)[0].capitalized
+                                                              self.sections.append((dic["organization"] as! String)[0].capitalized)
+                                                              dateStr = (dic["organization"] as! String)[0].capitalized
                                                               arr.add(dic)
                                                               print(arr)
                                                           }
-                                                          else if (dic["givenName"] as! String)[0].capitalized == dateStr
+                                                          else if (dic["organization"] as! String)[0].capitalized == dateStr
                                                           {
                                                               arr.add(dic)
                                                               print(arr)
                                                           }
-                                                          else if (dic["givenName"] as! String)[0].capitalized != dateStr
+                                                          else if (dic["organization"] as! String)[0].capitalized != dateStr
                                                           {
                                                               
                                                               finalArray.add(["char":dateStr, "list": arr.copy()])
                                                               print(finalArray)
-                                                              self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                                              self.sections.append((dic["organization"] as! String)[0].capitalized)
                                                               
-                                                            dateStr = (dic["givenName"] as! String)[0].capitalized
+                                                            dateStr = (dic["organization"] as! String)[0].capitalized
                                                               
                                                               arr.removeAllObjects()
                                                               

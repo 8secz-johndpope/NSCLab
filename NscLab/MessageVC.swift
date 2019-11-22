@@ -119,8 +119,9 @@ class MessageVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
                             if snapShot.childSnapshot(forPath: "message").value as? String != nil
                             {
                                 Cell.lblUserMsg.text = snapShot.childSnapshot(forPath: "message").value as? String
+                                let interval = TimeInterval(snapShot.childSnapshot(forPath: "time").value as? Double ?? 0)
                                 hmaFormat.timeZone = TimeZone.current
-                                Cell.lblTime.text = hmaFormat.string(from: Date(timeIntervalSince1970: snapShot.childSnapshot(forPath: "time").value as? Double ?? 0))
+                                Cell.lblTime.text = hmaFormat.string(from: Date(timeIntervalSince1970: TimeInterval(interval)))
                                 
                                 //Cell.lblUserMsg.text = snapShot.childSnapshot(forPath: "message").value as? String
                             }

@@ -311,15 +311,15 @@ class LoginVc: UIViewController ,UITextFieldDelegate
     {
         if (txtEmailAddress.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
         {
-            PopUp(Controller: self, title: "Oops!", message: "Please fill emailID", type: .error, time: 3)
+            PopUp(Controller: self, title: "Oops!", message: "Email is required", type: .error, time: 3)
         }
         else if validateEmailWithString(txtEmailAddress.text! as NSString)
         {
-            PopUp(Controller: self, title: "Oops!", message: "Please enter valid emailID", type: .error, time: 3)
+            PopUp(Controller: self, title: "Oops!", message: "Email should be in correct format", type: .error, time: 3)
         }
         else if (txtPassword.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
         {
-            PopUp(Controller: self, title: "Oops!", message: "Please fill password", type: .error, time: 3)
+            PopUp(Controller: self, title: "Oops!", message: "Password is required", type: .error, time: 3)
         }
         else
         {
@@ -381,7 +381,7 @@ class LoginVc: UIViewController ,UITextFieldDelegate
                     
                     if result["status"].boolValue == false
                          {
-                            PopUp(Controller: self, title: "Error!", message: (result["msg"].stringValue), type: .error, time: 3)
+                            PopUp(Controller: self, title: "Error!", message: "Email Id or password does not match", type: .error, time: 3)
                            
                             self.stopAnimating()
                                         

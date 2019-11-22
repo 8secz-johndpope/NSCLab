@@ -104,8 +104,8 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
            let obj = storyboard?.instantiateViewController(withIdentifier: "ProgramDetailVC") as! ProgramDetailVC
         
         obj.tittleName = programList[indexPath.section]["list"][indexPath.row]["topic"].stringValue
-        
-        obj.date = dmmmyFormat.string(from: ymdFormat.date(from: programList[indexPath.section]["list"][indexPath.row]["toDate"].stringValue) ?? Date()) + " - " + dmmmyFormat.string(from: ymdFormat.date(from: programList[indexPath.section]["list"][indexPath.row]["from_date"].stringValue) ?? Date())
+        dmmmyFormat.dateFormat = "dd MMM yyyy"
+        obj.date = dmmmyFormat.string(from: ymdFormat.date(from: programList[indexPath.section]["list"][indexPath.row]["toDate"].stringValue) ?? Date())// + " - " + dmmmyFormat.string(from: ymdFormat.date(from: programList[indexPath.section]["list"][indexPath.row]["from_date"].stringValue) ?? Date())
         
         obj.time = programList[indexPath.section]["list"][indexPath.row]["toTime"].stringValue[0..<5]  + " - " + programList[indexPath.section]["list"][indexPath.row]["fromTime"].stringValue[0..<5]
         obj.desc = programList[indexPath.section]["list"][indexPath.row]["description"].stringValue
@@ -115,6 +115,8 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
         obj.programId = programList[indexPath.section]["list"][indexPath.row]["program_id"].stringValue
   
            navigationController?.pushViewController(obj, animated: true)
+        
+        dmmmyFormat.dateFormat = "dd-MMM-yyyy"
            
        }
        

@@ -22,6 +22,7 @@ class MapVC: UIViewController,UISearchBarDelegate{
     
     @IBOutlet weak var HeaderView: UIView!
      
+    @IBOutlet weak var btnSearch: UIButton!
     //-------------------
     // MARK: Identifiers
     //-------------------
@@ -77,6 +78,7 @@ class MapVC: UIViewController,UISearchBarDelegate{
     {
         btnSegment.isEnabled = true
         isMap = true
+        btnSearch.isHidden = true
         btnSegment.selectedSegmentIndex = 1
         VC = storyboard?.instantiateViewController(withIdentifier: "MapLocationVC") as! MapLocationVC
         
@@ -139,7 +141,7 @@ class MapVC: UIViewController,UISearchBarDelegate{
         if btnSegment.selectedSegmentIndex == 0
         {
             isMap = false
-            
+            btnSearch.isHidden = false
             VC = storyboard?.instantiateViewController(withIdentifier: "MapListVC") as! MapListVC
                   
             
@@ -174,6 +176,7 @@ class MapVC: UIViewController,UISearchBarDelegate{
         if isMap
         {
             isMap = false
+            btnSearch.isHidden = false
             btnSegment.selectedSegmentIndex = 0
             VC = storyboard?.instantiateViewController(withIdentifier: "MapListVC") as! MapListVC
             

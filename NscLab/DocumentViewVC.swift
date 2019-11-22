@@ -23,7 +23,7 @@ class DocumentViewVC: UIViewController{
     @IBOutlet weak var btnDownload: UIButton!
    
     var path = String()
-    
+    var timer = Timer()
     
     
     override func viewDidLoad() {
@@ -39,14 +39,24 @@ class DocumentViewVC: UIViewController{
         
       
         //let path = Bundle.main.path(forResource: "pdf", ofType: "pdf")
-                   let url = URL(string: "http://www.pdf995.com/samples/pdf.pdf")
+                   let url = URL(string: path)
         let request = URLRequest(url: url!)
                    
-                   webView.load(request)
+        self.start()
+        webView.load(request)
+        
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(self.loader), userInfo: nil, repeats: true)
     }
     
     
-    
+    @objc func loader() {
+        
+        if  !webView.isLoading{
+            self.view.isUserInteractionEnabled = true
+            self.stopAnimating()
+            timer.invalidate()
+        }
+    }
    
 
     @IBAction func btnBack(_ sender: UIButton)
@@ -57,8 +67,8 @@ class DocumentViewVC: UIViewController{
     @IBAction func btnDownloadTUI(_ sender: UIButton)
     {
             let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory)
-
-        let url = "http://www.pdf995.com/samples/pdf.pdf"
+        self.start()
+        let url = path
             Alamofire.download(
                 url,
                 method: .get,
@@ -77,6 +87,8 @@ class DocumentViewVC: UIViewController{
                     print(DefaultDownloadResponse.destinationURL?.lastPathComponent)
                     
                     print(DefaultDownloadResponse.destinationURL)
+                    PopUp(Controller: self, title: "Done!", message: "Download successfull", type: .success, time: 3)
+                    self.stopAnimating()
                     //result closure
                 })
     

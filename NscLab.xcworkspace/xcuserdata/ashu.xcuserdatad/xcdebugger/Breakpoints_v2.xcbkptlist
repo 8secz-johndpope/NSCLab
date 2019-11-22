@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "986D033B-6963-47B7-A971-07D51BE4AA00"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "839FDF9B-EE9E-4BB6-A6D5-A72E137D542D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NscLab/ChatVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "383"
+            endingLineNumber = "383"
+            landmarkName = "configureDatabase()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "839FDF9B-EE9E-4BB6-A6D5-A72E137D542D - daa9862dd0fa7592"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NSCLab.ChatVC.configureDatabase() -&gt; ()"
+                  moduleName = "NSCLab"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ashu/Documents/NSCLab/NscLab/ChatVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "384"
+                  endingLineNumber = "384"
+                  offsetFromSymbolStart = "408">
+               </Location>
+               <Location
+                  uuid = "839FDF9B-EE9E-4BB6-A6D5-A72E137D542D - fbab97bc593357fb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Error&gt;, __C.FIRDatabaseReference) -&gt; () in NSCLab.ChatVC.configureDatabase() -&gt; ()"
+                  moduleName = "NSCLab"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ashu/Documents/NSCLab/NscLab/ChatVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "387"
+                  endingLineNumber = "387"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

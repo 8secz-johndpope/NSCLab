@@ -74,7 +74,7 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource{
      
         cell.lblDocument.text = docData[indexPath.row]["documentName"].stringValue
        
-        
+        cell.btnDownload.tag = indexPath.row
     
         return cell
     }
@@ -122,8 +122,8 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource{
     @IBAction func btnDocumentTUI(_ sender: UIButton)
     {
        let destination = DownloadRequest.suggestedDownloadDestination(for: .documentDirectory)
-
-             let url = "http://www.pdf995.com/samples/pdf.pdf"
+        self.start()
+        let url = self.docData[sender.tag]["documentPath"].stringValue
                  Alamofire.download(
                      url,
                      method: .get,
@@ -142,6 +142,8 @@ class DocumentVC: UIViewController ,UITableViewDelegate,UITableViewDataSource{
                          print(DefaultDownloadResponse.destinationURL?.lastPathComponent)
                          
                          print(DefaultDownloadResponse.destinationURL)
+                        PopUp(Controller: self, title: "Done!", message: "Download Successfull", type: .success, time: 3)
+                        self.stopAnimating()
                          //result closure
                      })
          

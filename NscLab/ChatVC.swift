@@ -378,8 +378,8 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
 
         func configureDatabase() {
             
-            let timeDic = ["time_stamp": Date().timeIntervalSince1970]
-            
+            let timeDic = ["time_stamp": Date.currentTimeStamp]
+            print(timeDic)
                 
                 Database.database().reference().child("chats").child(uid).child(chatUserId).setValue(timeDic, withCompletionBlock: {err, ref in
                     
@@ -633,7 +633,7 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
                 print(Date().timeIntervalSince1970.bitPattern)
                 print(Date().timeIntervalSince1970.exponent)
                 print(Date().timeIntervalSince1970.exponentBitPattern)
-                let messageDic = ["message": txtField.text!, "seen": false, "type":"text", "time": Date().timeIntervalSince1970, "from": uid] as [String : Any]
+                let messageDic = ["message": txtField.text!, "seen": false, "type":"text", "time": Date.currentTimeStamp, "from": uid] as [String : Any]
                 
                 if chatUserId == uid
                 {

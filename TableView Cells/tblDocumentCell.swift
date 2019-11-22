@@ -11,6 +11,7 @@ import UIKit
 class tblDocumentCell: UITableViewCell {
 
     @IBOutlet weak var lblDocument: UILabel!
+    @IBOutlet weak var btnDownload: UIButton!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

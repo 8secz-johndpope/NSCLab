@@ -265,7 +265,7 @@ class ProgPeopleDetailVC: UIViewController {
                                   
                                   
                                   
-                                  let strArr = self.attendeesDetailData["givenName"].stringValue + " " + self.attendeesDetailData["surname"].stringValue
+                                  let strArr = [self.attendeesDetailData["givenName"].stringValue, self.attendeesDetailData["surname"].stringValue]
                                       
                                       if strArr.count > 1
                                       {

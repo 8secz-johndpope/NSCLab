@@ -55,11 +55,12 @@ class CyberMissionsVC: UIViewController,UICollectionViewDelegate,UICollectionVie
             // Do any additional setup after loading the view.
             
             lblTittleHeader.text = tittleName
-        
+            messageBadgeApi()
         }
     
-    override func viewWillAppear(_ animated: Bool) {
-        messageBadgeApi()
+    override func viewWillAppear(_ animated: Bool)
+    {
+        
     }
     
         //------------------------------------
@@ -111,11 +112,12 @@ class CyberMissionsVC: UIViewController,UICollectionViewDelegate,UICollectionVie
                 if indexPath.row == 2
                                             
                 {
+                    
+                    let cell = self.colCyberMissionsView.cellForItem(at: IndexPath(row: 2, section: 0)) as! ColCyberMissionCell
+                    
+                    cell.lblBadge.isHidden = true
                                            
                     let obj = storyboard?.instantiateViewController(withIdentifier: "MessageVC") as! MessageVC
-                                                                
-                                                               
-                                                 
                     self.navigationController?.pushViewController(obj, animated: true)
                                                                 
                                                                 

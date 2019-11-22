@@ -427,20 +427,20 @@ class ForgetPassVC: UIViewController,UITextFieldDelegate {
             {
                   if (txtEmail.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                         {
-                            PopUp(Controller: self, title: "Oops!", message: "Please fill EmailID", type: .error, time: 3)
+                            PopUp(Controller: self, title: "Oops!", message: "Email is required", type: .error, time: 3)
                         }
 
                         else if validateEmailWithString(txtEmail.text! as NSString)
                         {
                             
-                           PopUp(Controller: self, title: "Oops!", message: "Please enter valid emailID", type: .error, time: 3)
+                           PopUp(Controller: self, title: "Oops!", message: "Please enter your valid email address", type: .error, time: 3)
                         }
 
                   else if (txtPassword.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                                       
                   {
                                     
-                    PopUp(Controller: self, title: "Oops!", message: "Please fill password", type: .error, time: 3)
+                    PopUp(Controller: self, title: "Oops!", message: "Password is required", type: .error, time: 3)
                                       
                   }
                                        
@@ -448,13 +448,13 @@ class ForgetPassVC: UIViewController,UITextFieldDelegate {
                                         
                   {
                                           
-                    PopUp(Controller: self, title: "Oops!", message: "Confirm password and password must be same", type: .error, time: 3)
+                    PopUp(Controller: self, title: "Oops!", message: "Password and confirm password should be same", type: .error, time: 3)
                                       
                   }
              
                   else if (txtCode.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                         {
-                           PopUp(Controller: self, title: "Oops!", message: "Please fill Verification Code", type: .error, time: 3)
+                           PopUp(Controller: self, title: "Oops!", message: "Please enter your valid OTP", type: .error, time: 3)
                         }
                         else
                         {

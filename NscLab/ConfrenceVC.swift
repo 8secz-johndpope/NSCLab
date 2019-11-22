@@ -25,6 +25,10 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
     
     @IBOutlet weak var tblUpcomingView: UITableView!
    
+    @IBOutlet weak var tblAttending: UITableView!
+    
+    @IBOutlet weak var tblPastEvents: UITableView!
+    
     //------------------------
         // MARK: Identifiers
         //------------------------
@@ -88,22 +92,22 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
        
     
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-         
-        if section == 0
-        {
-              return sections[section]
-        }
-        else if section == 1
-        {
-        return sections[section]
-        }
-        else
-        {
-             return sections[section]
-        }
-      
-     }
+//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//
+//        if section == 0
+//        {
+//              return sections[section]
+//        }
+//        else if section == 1
+//        {
+//        return sections[section]
+//        }
+//        else
+//        {
+//             return sections[section]
+//        }
+//
+//     }
      
      func numberOfSections(in tableView: UITableView) -> Int {
          return self.sections.count
@@ -111,7 +115,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
     
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
         {
-            switch (section)
+            switch (tableView.tag)
             {
                case 0:
                   
@@ -139,7 +143,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
        
         let cell = tblUpcomingView.dequeueReusableCell(withIdentifier: "tblUpcomingCell") as! tblUpcomingCell
        
-        switch (indexPath.section) {
+        switch (tableView.tag) {
            case 0:
             if upcomingConferenceData.count == 0
             {
@@ -164,6 +168,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                 print(strarray)
 
                     cell.lblCalenderDate.text = strarray[2]
+                cell.lblCalenderDate.isHidden = false
             }
                 
 
@@ -193,7 +198,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                 
                 cell.lblCalenderDate.text = strarray[2]
                 cell.imgCon.isHidden = false
-                
+                cell.lblCalenderDate.isHidden = false
             }
             
 
@@ -224,7 +229,8 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                 print(strarray)
                 
                 cell.lblCalenderDate.text = strarray[2]
-                cell.imgCon.isHidden = false
+                cell.imgCon.isHidden = true
+                cell.lblCalenderDate.isHidden = true
                 
             }
             
@@ -242,7 +248,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
   
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             
-                      switch (indexPath.section)
+        switch (tableView.tag)
                       {
                                  case 0:
                                     if upcomingConferenceData.count != 0
@@ -299,8 +305,9 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
     @objc func showScrollBar()
      {
         
-         tblUpcomingView.flashScrollIndicators()
-       
+        tblUpcomingView.flashScrollIndicators()
+        tblAttending.flashScrollIndicators()
+        tblPastEvents.flashScrollIndicators()
         
     
      }
@@ -487,7 +494,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                             print( self.attendingConferenceData)
 
 
-                          self.tblUpcomingView.reloadData()
+                          self.tblAttending.reloadData()
 
 
                            }
@@ -551,7 +558,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                               print( self.pastconferenceData)
 
 
-                             self.tblUpcomingView.reloadData()
+                             self.tblPastEvents.reloadData()
 
                              }
                           }

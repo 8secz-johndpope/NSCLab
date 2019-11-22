@@ -584,42 +584,42 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
         {
             if (txtSurname.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
             {
-                PopUp(Controller: self, title: "Oops!", message: "Please fill  Surname", type: .error, time: 3)
+                PopUp(Controller: self, title: "Oops!", message: "Surname is required", type: .error, time: 3)
             }
             else if (txtGivenName.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
 
             {
-                     PopUp(Controller: self, title: "Oops!", message: "Please fill  GivenName", type: .error, time: 3)
+                     PopUp(Controller: self, title: "Oops!", message: "Givenname is required", type: .error, time: 3)
 
             }
             else if (txtOrganizer.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                 {
-                          PopUp(Controller: self, title: "Oops!", message: "Please fill  Organization", type: .error, time: 3)
+                          PopUp(Controller: self, title: "Oops!", message: "Organization is required", type: .error, time: 3)
                 }
 
       
             else if (txtEmail.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                   {
-                      PopUp(Controller: self, title: "Oops!", message: "Please fill emailID", type: .error, time: 3)
+                      PopUp(Controller: self, title: "Oops!", message: "Email is required", type: .error, time: 3)
                   }
                   
             else if validateEmailWithString(txtEmail.text! as NSString)
                   {
-                      PopUp(Controller: self, title: "Oops!", message: "Please enter valid emailID", type: .error, time: 3)
+                      PopUp(Controller: self, title: "Oops!", message: "Email should be in correct format", type: .error, time: 3)
                   }
                 
             else if (txtPhone.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                       {
-                          PopUp(Controller: self, title: "Oops!", message: "Please fill Phonenumber", type: .error, time: 3)
+                          PopUp(Controller: self, title: "Oops!", message: "Phone number is required", type: .error, time: 3)
                       }
                 
                 else if (txtPassword.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                  {
-                     PopUp(Controller: self, title: "Oops!", message: "Please fill password", type: .error, time: 3)
+                     PopUp(Controller: self, title: "Oops!", message: "Password is required", type: .error, time: 3)
                  }
                  else if txtConfirmPassword.text! != txtPassword.text!
                  {
-                     PopUp(Controller: self, title: "Oops!", message: "Confirm password and password must be same", type: .error, time: 3)
+                     PopUp(Controller: self, title: "Oops!", message: "Password and confirm password should be same", type: .error, time: 3)
                  }
 
 //            else if (txtWechat.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
@@ -629,7 +629,7 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
                 
             else if (txtCountry.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
             {
-                PopUp(Controller: self, title: "Oops!", message: "Please fill Country", type: .error, time: 3)
+                PopUp(Controller: self, title: "Oops!", message: "Country is required", type: .error, time: 3)
             }
                 
 
