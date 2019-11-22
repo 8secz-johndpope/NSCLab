@@ -105,9 +105,9 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
         
         cell.imgUser.sd_setImage(with: URL(string: "http://" + (sharingData[indexPath.row]["profileImage"].stringValue)), placeholderImage: UIImage(named: "logo"), options: .refreshCached, completed: nil)
         
-        cell.lblDate.isHidden = true
+        cell.lblDate.text = sharingData[indexPath.row]["ph_date"].stringValue
     
-        cell.lblTime.isHidden = true
+        cell.lblTime.text = sharingData[indexPath.row]["ph_time"].stringValue
         
         cell.imgUser.layer.masksToBounds = false
         cell.imgUser.layer.cornerRadius =  cell.imgUser.frame.height/2
@@ -329,7 +329,7 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
             
             var parameter = [String : Any]()
             
-            parameter = ["type":"sharing","attendees_id":UserDefaults.standard.integer(forKey: "attendeesid"),"conference_id": conferenceId,"description":txtField.text!]
+            parameter = ["type":"sharing","attendees_id":UserDefaults.standard.integer(forKey: "attendeesid"),"conference_id": conferenceId,"description":txtField.text!, "ph_date": dmyFormat.string(from: Date()), "ph_time": hmaFormat.string(from: Date())]
             
             
             let url = appDelegate.ApiImageUrl + parameterConvert(pram: parameter)
@@ -401,6 +401,7 @@ class PhotoSharingVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,
     //
     //
     //                              self.uploadingView.isHidden = true
+                                self.txtField.text = ""
                                 self.photoSharingApi()
                                 
                           

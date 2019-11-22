@@ -89,10 +89,10 @@ class ForgetPassVC: UIViewController,UITextFieldDelegate {
                 
                 
                 //----------------------------------------------
-                lblEmail.isHidden = true
-                lblCode.isHidden = true
-                lblPassword.isHidden = true
-                lblConfirmPassword.isHidden = true
+//                lblEmail.isHidden = true
+//                lblCode.isHidden = true
+//                lblPassword.isHidden = true
+//                lblConfirmPassword.isHidden = true
                
                        
                 

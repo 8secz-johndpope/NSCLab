@@ -111,7 +111,11 @@ class ProgPeopleDetailVC: UIViewController {
     {
         let obj = storyboard?.instantiateViewController(withIdentifier: "ChatVC") as! ChatVC
 
-                  navigationController?.pushViewController(obj, animated: true)
+        obj.chatUserId = attendeesDetailData["email"].stringValue.replacingOccurrences(of: ".", with: "@")
+        obj.tittleName = self.lblName.text!
+        obj.firebaseChatOrAdmin = 0
+        
+        navigationController?.pushViewController(obj, animated: true)
     }
     
         //-----------------------
@@ -165,7 +169,7 @@ class ProgPeopleDetailVC: UIViewController {
                                 
                                 
                                 
-                                let strArr = self.speakerDetailData[0]["givenName"].stringValue + " " + self.speakerDetailData[0]["surname"].stringValue
+                                let strArr = [self.speakerDetailData[0]["givenName"].stringValue, self.speakerDetailData[0]["surname"].stringValue]
                                     
                                     if strArr.count > 1
                                     {

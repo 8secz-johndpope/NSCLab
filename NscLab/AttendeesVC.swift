@@ -32,6 +32,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         // MARK: Identifiers
         //------------------------
     
+    var isFromPrsentation = false
     
     var timer = Timer()
     
@@ -45,7 +46,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
     
     var searchData =  NSMutableArray()
      
-  
+  var presentationId = String()
      
      var filterData = NSMutableArray()
      
@@ -200,13 +201,13 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         if isSpeaker == true
         {
             
-            tittleHeader = "SPEAKER DETAIL"
+            tittleHeader = "Speaker Detail"
             obj.speakerId = attendessList[indexPath.section]["list"][indexPath.row]["p_speaker_id"].stringValue
         }
         else
         {
            
-            tittleHeader = "ATTENDEES DETAIL"
+            tittleHeader = "Attendees Detail"
             obj.attendeesId = attendessList[indexPath.section]["list"][indexPath.row]["attendees_id"].stringValue
         }
 
@@ -248,7 +249,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
     {
         if firstNameOrLastNameOrOrg == 0
         {
-            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String).capitalized < (($1 as! NSDictionary)["givenName"] as! String).capitalized })
             
                 
                  var dateStr = ""
@@ -302,7 +303,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         }
         else if firstNameOrLastNameOrOrg == 1
         {
-            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["surname"] as! String) < (($1 as! NSDictionary)["surname"] as! String) })
+            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["surname"] as! String).capitalized < (($1 as! NSDictionary)["surname"] as! String).capitalized })
             
                 
                  var dateStr = ""
@@ -356,7 +357,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         }
         else
         {
-            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+            let sortAttendessArr = searchData.sorted(by: { (($0 as! NSDictionary)["organization"] as! String).capitalized < (($1 as! NSDictionary)["organization"] as! String).capitalized })
             
                 
                  var dateStr = ""
@@ -440,7 +441,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         
         let actionSheet: UIAlertController = UIAlertController(title: "", message: "", preferredStyle: .actionSheet)
 
-        let cancelActionButton = UIAlertAction(title: "Last Name", style: .default) { _ in
+        let cancelActionButton = UIAlertAction(title: "Last Name", style: firstNameOrLastNameOrOrg != 1 ? .default : .destructive) { _ in
             
          
             self.firstNameOrLastNameOrOrg = 1
@@ -454,7 +455,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                     
                     let attendessArr = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                                              
-                                             let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["surname"] as! String) < (($1 as! NSDictionary)["surname"] as! String) })
+                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["surname"] as! String).capitalized < (($1 as! NSDictionary)["surname"] as! String).capitalized })
                                              var dateStr = ""
                                              //var finalDic = NSMutableDictionary()
                                              let arr = NSMutableArray()
@@ -516,7 +517,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                     self.start()
                     let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                               
-                              let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["surname"] as! String) < (($1 as! NSDictionary)["surname"] as! String) })
+                              let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["surname"] as! String).capitalized < (($1 as! NSDictionary)["surname"] as! String).capitalized })
                               var dateStr = ""
                               //var finalDic = NSMutableDictionary()
                               let arr = NSMutableArray()
@@ -578,7 +579,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         
            //------ FIRST NAME ---------------------------------------------
 
-           let saveActionButton = UIAlertAction(title: "First Name", style: .default)
+           let saveActionButton = UIAlertAction(title: "First Name", style: firstNameOrLastNameOrOrg != 0 ? .default : .destructive)
                { _ in
                 
                 
@@ -592,7 +593,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                         self.start()
                         let attendessArr = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                                     
-                                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+                                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String).capitalized < (($1 as! NSDictionary)["givenName"] as! String).capitalized })
                                     var dateStr = ""
                                     //var finalDic = NSMutableDictionary()
                                     let arr = NSMutableArray()
@@ -654,7 +655,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                         self.start()
                         let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                                     
-                                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+                                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String).capitalized < (($1 as! NSDictionary)["givenName"] as! String).capitalized })
                                     var dateStr = ""
                                     //var finalDic = NSMutableDictionary()
                                     let arr = NSMutableArray()
@@ -718,7 +719,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         
           //------ ORGANIZATION NAME ---------------------------------------------
 
-           let deleteActionButton = UIAlertAction(title: "Organization", style: .destructive)
+           let deleteActionButton = UIAlertAction(title: "Organization", style: firstNameOrLastNameOrOrg != 2 ? .default : .destructive)
                { _ in
                   self.firstNameOrLastNameOrOrg = 2
              if isSpeaker == true
@@ -729,7 +730,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                     
                     let attendessArr = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                     
-                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String).capitalized < (($1 as! NSDictionary)["organization"] as! String).capitalized })
                     var dateStr = ""
                     //var finalDic = NSMutableDictionary()
                     let arr = NSMutableArray()
@@ -792,7 +793,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                     
                     let attendessArr = (self.attendessData["attendees_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                     
-                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String) < (($1 as! NSDictionary)["organization"] as! String) })
+                    let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["organization"] as! String).capitalized < (($1 as! NSDictionary)["organization"] as! String).capitalized })
                     var dateStr = ""
                     //var finalDic = NSMutableDictionary()
                     let arr = NSMutableArray()
@@ -876,7 +877,15 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
             
             if isSpeaker == true
             {
-                 parameter = ["type":"speakerList","conference_id":conferenceId] as [String : Any]
+                if isFromPrsentation
+                {
+                    parameter = ["type":"speakerList","conference_id":conferenceId, "prsentation_id": presentationId] as [String : Any]
+                }
+                else
+                {
+                    parameter = ["type":"speakerList","conference_id":conferenceId] as [String : Any]
+                }
+                 
             }
             else
             {
@@ -921,7 +930,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                                 self.searchData = (self.attendessData["speaker_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                                 
                                 
-                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String).capitalized < (($1 as! NSDictionary)["givenName"] as! String).capitalized })
                                                  
                                                      
                                                       var dateStr = ""
@@ -934,24 +943,24 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                                                           
                                                           if i == 0
                                                           {
-                                                              self.sections.append((dic["givenName"] as! String)[0])
-                                                              dateStr = (dic["givenName"] as! String)[0]
+                                                              self.sections.append((dic["givenName"] as! String)[0].capitalized)
+                                                              dateStr = (dic["givenName"] as! String)[0].capitalized
                                                               arr.add(dic)
                                                               print(arr)
                                                           }
-                                                          else if (dic["givenName"] as! String)[0] == dateStr
+                                                          else if (dic["givenName"] as! String)[0].capitalized == dateStr
                                                           {
                                                               arr.add(dic)
                                                               print(arr)
                                                           }
-                                                          else if (dic["givenName"] as! String)[0] != dateStr
+                                                          else if (dic["givenName"] as! String)[0].capitalized != dateStr
                                                           {
                                                               
                                                               finalArray.add(["char":dateStr, "list": arr.copy()])
                                                               print(finalArray)
-                                                              self.sections.append((dic["givenName"] as! String)[0])
+                                                              self.sections.append((dic["givenName"] as! String)[0].capitalized)
                                                               print(finalArray)
-                                                              dateStr = (dic["givenName"] as! String)[0]
+                                                              dateStr = (dic["givenName"] as! String)[0].capitalized
                                                               print(finalArray)
                                                               arr.removeAllObjects()
                                                               print(finalArray)
@@ -982,7 +991,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
                              
                                 
                                 
-                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String) < (($1 as! NSDictionary)["givenName"] as! String) })
+                                let sortAttendessArr = attendessArr.sorted(by: { (($0 as! NSDictionary)["givenName"] as! String).capitalized < (($1 as! NSDictionary)["givenName"] as! String).capitalized })
                                                  
                                                      
                                                       var dateStr = ""

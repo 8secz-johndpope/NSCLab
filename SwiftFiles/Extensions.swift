@@ -11,6 +11,36 @@ import Foundation
 import UIKit
 
 
+class MyLeftCustomFlowLayout:UICollectionViewFlowLayout {
+override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+
+    let attributes = super.layoutAttributesForElements(in: rect)
+
+    var leftMargin = sectionInset.left
+    var maxY: CGFloat = 2.0
+
+    let horizontalSpacing:CGFloat = 5
+
+    attributes?.forEach { layoutAttribute in
+        if layoutAttribute.frame.origin.y >= maxY
+            || layoutAttribute.frame.origin.x == sectionInset.left {
+            leftMargin = sectionInset.left
+        }
+
+        if layoutAttribute.frame.origin.x == sectionInset.left {
+            leftMargin = sectionInset.left
+        }
+        else {
+            layoutAttribute.frame.origin.x = leftMargin
+        }
+
+        leftMargin += layoutAttribute.frame.width + horizontalSpacing
+        maxY = max(layoutAttribute.frame.maxY, maxY)
+    }
+
+    return attributes
+}
+}
 extension UIViewController
 {
     func hideKeyboardTappedArround()
@@ -38,6 +68,14 @@ extension UITextField {
     
 }
 
+extension UIButton {
+    func changeButtonImageColor(color: UIColor, mode: UIControl.State)
+    {
+        let button = self
+        button.setImage(button.image(for: mode)?.withRenderingMode(.alwaysTemplate), for: mode)
+        button.tintColor = color
+    }
+}
 
 extension UIView {
     func setGradientBackground(colorLeft: UIColor, colorMiddle: UIColor , colorRight: UIColor){
@@ -114,4 +152,44 @@ extension String {
     return String(self[start ..< end])
   }
 
+}
+
+extension Data {
+    var html2AttributedString: NSAttributedString? {
+        do {
+            return try NSAttributedString(data: self, options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue], documentAttributes: nil)
+        } catch {
+            print("error:", error)
+            return  nil
+        }
+    }
+    var html2String: String {
+        return html2AttributedString?.string ?? ""
+    }
+}
+
+extension String {
+    var html2AttributedString: NSAttributedString? {
+        return Data(utf8).html2AttributedString
+    }
+    var html2String: String {
+        return html2AttributedString?.string ?? ""
+    }
+    
+    func twoDecimalZero() -> String
+    {
+        let str = self
+        let strArr = Array(str)
+        let str1 = str.components(separatedBy: ".")
+        if !strArr.contains(".")
+        {
+            return str+".00"
+        }
+        else if str1.last?.count != 2
+        {
+            return str+"0"
+        }
+        
+        return str
+    }
 }

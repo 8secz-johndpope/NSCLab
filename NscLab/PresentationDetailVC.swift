@@ -39,6 +39,7 @@ class PresentationDetailVC: UIViewController {
           
     var timer = Timer()
     var presentationDetailData = JSON()
+    
         //------------------------
           // MARK: View Life Cycle
           //------------------------
@@ -50,7 +51,6 @@ class PresentationDetailVC: UIViewController {
             SubDetailsView.backgroundColor = Colors.HeaderColor
              
             
-         
 
 
            
@@ -129,7 +129,19 @@ class PresentationDetailVC: UIViewController {
                    }
     }
     
-           
+    @IBAction func btnSpeakersTUI(_ sender: UIButton)
+    {
+        let obj = storyboard?.instantiateViewController(withIdentifier: "AttendeesVC") as! AttendeesVC
+                              
+        isSpeaker = true
+        tittleHeader = "Speakers"
+        obj.isFromPrsentation = true
+        obj.presentationId = presentationId
+        
+                                                            
+        self.navigationController?.pushViewController(obj, animated: true)
+    }
+    
            //-----------------------
            // MARK: Web Service
            //-----------------------
@@ -178,9 +190,9 @@ class PresentationDetailVC: UIViewController {
                             
                             self.lblTittle.text! = self.presentationDetailData["topic"].stringValue
                             
-                            self.lblDate.text! = self.presentationDetailData["date"].stringValue
+                            self.lblDate.text! = dmmmyFormat.string(from: ymdFormat.date(from: self.presentationDetailData["date"].stringValue) ?? Date())
                             
-                            self.lblTime.text! = self.presentationDetailData["toTime"].stringValue  + " - " + self.presentationDetailData["fromTime"].stringValue
+                            self.lblTime.text! = self.presentationDetailData["toTime"].stringValue[0..<5]  + " - " + self.presentationDetailData["fromTime"].stringValue[0..<5]
                             
                             self.lblDescription.text! = "Description: " + self.presentationDetailData["description"].stringValue
                             

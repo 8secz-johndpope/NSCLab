@@ -49,6 +49,8 @@ class MapListVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
        self.tblMapListView.tableFooterView = UIView()
         
         tblMapListView.rowHeight = 80
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(ChangeVC), name: Notification.Name("reloadMapList"), object: nil)
     }
     
   
@@ -83,13 +85,14 @@ class MapListVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
 
-        let obj = storyboard?.instantiateViewController(withIdentifier: "MapLocationVC") as! MapLocationVC
+        
 
-        obj.locationName = mapListData[indexPath.row]["address"].stringValue
-
+        
+        locationAddress = mapListData[indexPath.row]["address"].stringValue
+        locationImageUrl = mapListData[indexPath.row]["mapImage"].stringValue
 //        navigationController?.pushViewController(obj, animated: true)
 
-         present(obj, animated: true)
+         NotificationCenter.default.post(name: Notification.Name(rawValue: "showMap"), object: nil, userInfo: nil)
       
     }
    
@@ -97,6 +100,12 @@ class MapListVC: UIViewController ,UITableViewDelegate,UITableViewDataSource {
     //MARK: User Defined Fuction
     //----------------------------
     
+    @objc func ChangeVC(_notification: Notification)
+    {
+        mapListData = JSON(searchDataLocation)
+        tblMapListView.reloadData()
+        
+    }
     
     @objc func InternetAvailable()
     {

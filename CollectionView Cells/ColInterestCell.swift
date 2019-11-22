@@ -14,4 +14,5 @@ class ColInterestCell: UICollectionViewCell
     
     @IBOutlet weak var lblInterest: UILabel!
     
+    @IBOutlet weak var btnRemove: UIButton!
 }

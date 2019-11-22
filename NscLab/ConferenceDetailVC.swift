@@ -42,6 +42,7 @@ class ConferenceDetailVC: UIViewController {
     var des =  String ()
     var date = String()
     var timer = Timer()
+    var isAttending = false
 
         //------------------------
           // MARK: View Life Cycle
@@ -54,7 +55,7 @@ class ConferenceDetailVC: UIViewController {
        
               lblTittle.text = topic
             lblDescription.text = "Description: " + des
-            
+            lblDate.text = dmmmyFormat.string(from: ymdFormat.date(from: date) ?? Date())
             HeaderView.backgroundColor = Colors.HeaderColor
             SubDetailsView.backgroundColor = Colors.HeaderColor
             
@@ -68,7 +69,8 @@ class ConferenceDetailVC: UIViewController {
             btnAttend.layer.cornerRadius = 6
             btnAttend.clipsToBounds = true
                     
-                     
+            btnAttend.isHidden = isAttending
+            
             // Do any additional setup after loading the view.
         }
         
@@ -110,12 +112,12 @@ class ConferenceDetailVC: UIViewController {
     {
         attendApi()
         
-         DispatchQueue.main.asyncAfter(deadline: .now()+0.5)
-        {
-            self.navigationController?.popViewController(animated: true)
+         //DispatchQueue.main.asyncAfter(deadline: .now()+0.5)
+        //{
+            //self.navigationController?.popViewController(animated: true)
                                         
-        }
-            }
+        //}
+    }
     
            
   @IBAction func btnStarTUI(_ sender: UIButton)
@@ -181,9 +183,9 @@ class ConferenceDetailVC: UIViewController {
                                         else
                                         {
                                             self.stopAnimating()
-
+                                            self.btnAttend.isHidden = true
                                    
-                                          PopUp(Controller: self, title:  "", message: result["msg"].stringValue, type: .success, time: 2)
+                                          PopUp(Controller: self, title:  "Done", message: result["msg"].stringValue, type: .success, time: 2)
                                      
                                         }
                                      }

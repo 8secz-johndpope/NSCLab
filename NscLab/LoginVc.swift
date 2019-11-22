@@ -9,6 +9,9 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import Firebase
+import FirebaseDatabase
+import FirebaseStorage
 
 class LoginVc: UIViewController ,UITextFieldDelegate
 {
@@ -48,6 +51,8 @@ class LoginVc: UIViewController ,UITextFieldDelegate
     //--------------------------
     //MARK: Identifiers
     //--------------------------
+    
+    let uid = (UserDefaults.standard.string(forKey: "email") ?? "").replacingOccurrences(of: ".", with: "@")
     
     var timer = Timer()
     
@@ -193,6 +198,33 @@ class LoginVc: UIViewController ,UITextFieldDelegate
     // MARK: User Defined Function
     //----------------------------
     
+    
+    
+    func login_user(uid: String)
+    {
+        let mDatabase = Database.database().reference().child("users")
+        let parameter = ["device_token": appDelegate.FcmId]
+
+        mDatabase.child(uid).updateChildValues(parameter, withCompletionBlock: {error,ref in
+            if error == nil
+            {
+                let obj = self.storyboard?.instantiateViewController(withIdentifier: "ConfrenceVC") as! ConfrenceVC
+
+                UserDefaults.standard.set(true, forKey: "isUserLoggedIn")
+
+                self.navigationController?.pushViewController(obj, animated: true)
+                print("Logged in")
+                print(ref.child("chats").child(String(UserDefaults.standard.integer(forKey: "attendeesid"))))
+                self.stopAnimating()
+            }
+            else
+            {
+                print(error?.localizedDescription)
+                self.stopAnimating()
+            }
+            
+        })
+    }
     
     @objc func txtEmailAddressValueChanged()
     {
@@ -356,10 +388,10 @@ class LoginVc: UIViewController ,UITextFieldDelegate
                   }
                         else
                         {
-                            self.stopAnimating()
+                            
 
                          
-                            
+                            self.login_user(uid: result["email"].stringValue.replacingOccurrences(of: ".", with: "@"))
                             UserDefaults.standard.set(result["weChatID"].stringValue, forKey: "wechatid")
                             UserDefaults.standard.set(result["organization"].stringValue, forKey: "organization")
                             UserDefaults.standard.set(result["givenName"].stringValue, forKey: "givenName")
@@ -378,12 +410,9 @@ class LoginVc: UIViewController ,UITextFieldDelegate
                             
                             UserDefaults.standard.set(result["attendees_id"].stringValue, forKey: "attendeesid")
                                                             
+                            
 
-                            let obj = self.storyboard?.instantiateViewController(withIdentifier: "ConfrenceVC") as! ConfrenceVC
-
-                            UserDefaults.standard.set(true, forKey: "isUserLoggedIn")
-
-                            self.navigationController?.pushViewController(obj, animated: true)
+                            
                         }
 
                         }

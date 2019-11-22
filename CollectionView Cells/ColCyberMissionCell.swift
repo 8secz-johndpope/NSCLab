@@ -13,4 +13,5 @@ class ColCyberMissionCell: UICollectionViewCell
     @IBOutlet weak var imgCyberView: UIImageView!
     
     @IBOutlet weak var lblCyberCategory: UILabel!
+    @IBOutlet weak var lblBadge: UILabel!
 }

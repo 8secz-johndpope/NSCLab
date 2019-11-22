@@ -9,7 +9,9 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
-
+import Firebase
+import FirebaseDatabase
+import FirebaseStorage
 
 class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableViewDataSource {
 
@@ -44,9 +46,34 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
     var msgRecive = ["I am fine."," 2:30 PM would be good ??"]
     var time = ["10:00 AM","10:05 AM"]
     var messageId = String()
+    
+    var firebaseChatOrAdmin = 0
+    
+    //Firebase Chat----------------------------
+    
+    let uid = (UserDefaults.standard.string(forKey: "email") ?? "").replacingOccurrences(of: ".", with: "@")
+    var chatUserId = String()
+    var ref: DatabaseReference!
+    var messages: [DataSnapshot]! = []
+    var msglength: NSNumber = 10
+    fileprivate var _refHandle: DatabaseHandle?
+
+    var storageRef: StorageReference!
+    var remoteConfig: RemoteConfig!
+    
+    //Firebase Chat----------------------------
+    
    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //Firebase Chat----------------------------
+        
+        //self.tblChat.register(UITableViewCell.self, forCellReuseIdentifier: "tableViewCell")
+
+        
+        
+        //Firebase Chat----------------------------
         
       messageView.layer.borderColor = UIColor.lightGray.cgColor
               messageView.layer.borderWidth = 0.5
@@ -78,8 +105,27 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
     override func viewWillAppear(_ animated: Bool)
     
     {
+        if firebaseChatOrAdmin == 0
+        {
+            configureDatabase()
+            configureStorage()
+            configureRemoteConfig()
+            fetchConfig()
+            messageView.isHidden = false
+        }
+        else
+        {
+            messageView.isHidden = true
+            ChatsApi()
+        }
         
-        ChatsApi()
+        
+        //Firebase Chat----------------------------
+        
+        
+        
+        //Firebase Chat----------------------------
+        
     }
     
     //------------------------------------
@@ -91,36 +137,148 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-    
-        return msgRecive.count
+        if firebaseChatOrAdmin == 0
+        {
+            return messages.count
+        }
+        else
+        {
+            return chatsData.count
+        }
+       
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
         
     {
         
+        if firebaseChatOrAdmin == 0
+        {
+            let messageSnapshot: DataSnapshot! = self.messages[indexPath.row]
+            print(messageSnapshot, "Snap")
+            let jsonMsg = JSON(messageSnapshot.value as! NSDictionary)
+            hmaFormat.timeZone = TimeZone.current
+            
+            if messageSnapshot.childSnapshot(forPath: "from").value as? String == uid
+            {
+                let cell = tblChat.dequeueReusableCell(withIdentifier: "tblMsgSendCell") as! tblMsgSendCell
+
+                cell.lblSentMsg.text = jsonMsg["message"].stringValue
+
+                cell.lblTime.text =  hmaFormat.string(from: Date(timeIntervalSince1970: jsonMsg["time"].doubleValue))
+
+                //            cell.lblDate.text = (dic["sent_date"] as! String)
+
+                            cell.msgView.layer.cornerRadius = 10
+                            cell.msgView.clipsToBounds = true
+
+                        cell.viewImage.isHidden = true
+
+                        cell.imgUser.layer.masksToBounds = false
+                        cell.imgUser.layer.cornerRadius =  cell.imgUser.frame.height/2
+                        cell.imgUser.clipsToBounds = true
+                            return cell
+            }
+            else
+            {
+                let cell = tblChat.dequeueReusableCell(withIdentifier: "tblMsgReceivedCell") as! tblMsgReceivedCell
+
+                            cell.lblRecievedMsg.text! = jsonMsg["message"].stringValue
+
+                            cell.lblTime.text =  hmaFormat.string(from: Date(timeIntervalSince1970: jsonMsg["time"].doubleValue))
+
+                //            cell.lblDate.text = (dic["sent_date"] as! String)
+
+                            cell.messageRecievedView.layer.cornerRadius = 10
+                            cell.messageRecievedView.clipsToBounds = true
+
+                        cell.viewImage.isHidden = true
+
+                        cell.imgUser.layer.masksToBounds = false
+                        cell.imgUser.layer.cornerRadius =  cell.imgUser.frame.height/2
+                        cell.imgUser.clipsToBounds = true
+                            return cell
+            }
+            
+        }
+        else
+        {
+            
+            
+            let cell = tblChat.dequeueReusableCell(withIdentifier: "tblMsgReceivedCell") as! tblMsgReceivedCell
+
+            cell.lblRecievedMsg.text! = chatsData[indexPath.row]["topic"].stringValue
+
+                        cell.lblTime.text =  chatsData[indexPath.row]["date"].stringValue
+
+            //            cell.lblDate.text = (dic["sent_date"] as! String)
+
+                        cell.messageRecievedView.layer.cornerRadius = 10
+                        cell.messageRecievedView.clipsToBounds = true
+
+                    cell.viewImage.isHidden = true
+
+                    cell.imgUser.layer.masksToBounds = false
+                    cell.imgUser.layer.cornerRadius =  cell.imgUser.frame.height/2
+                    cell.imgUser.clipsToBounds = true
+                        return cell
+            
+        }
+        //Firebase Chat----------------------------
+        
+        
+        //let cell = self.tblChat .dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath)
+        // Unpack message from Firebase DataSnapshot
+        /*let messageSnapshot: DataSnapshot! = self.messages[indexPath.row]
+        guard let message = messageSnapshot.value as? [String:String] else { return cell }
+        let name = message[Constants.MessageFields.name] ?? ""
+        if let imageURL = message[Constants.MessageFields.imageURL] {
+          if imageURL.hasPrefix("gs://") {
+            Storage.storage().reference(forURL: imageURL).getData(maxSize: INT64_MAX) {(data, error) in
+              if let error = error {
+                print("Error downloading: \(error)")
+                return
+              }
+              DispatchQueue.main.async {
+                cell.imageView?.image = UIImage.init(data: data!)
+                cell.setNeedsLayout()
+              }
+            }
+          } else if let URL = URL(string: imageURL), let data = try? Data(contentsOf: URL) {
+            cell.imageView?.image = UIImage.init(data: data)
+          }
+          cell.textLabel?.text = "sent by: \(name)"
+        } else {
+          let text = message[Constants.MessageFields.text] ?? ""
+          cell.textLabel?.text = name + ": " + text
+          cell.imageView?.image = UIImage(named: "ic_account_circle")
+          if let photoURL = message[Constants.MessageFields.photoURL], let URL = URL(string: photoURL),
+              let data = try? Data(contentsOf: URL) {
+            cell.imageView?.image = UIImage(data: data)
+          }
+        }
+        return cell*/
+        
+        
+        //Firebase Chat----------------------------
+        
+        
+
+        
+        
+        
+        
 //        let dic = chatsData[indexPath.row] as! String
         
 //       if formId == 1
 //        {
 
-            let cell = tblChat.dequeueReusableCell(withIdentifier: "tblMsgSendCell") as! tblMsgSendCell
-
-            cell.lblSentMsg.text! = msgSend[indexPath.row]
-
-            cell.lblTime.text =  time[indexPath.row]
-
-//            cell.lblDate.text = (dic["sent_date"] as! String)
-
-            cell.msgView.layer.cornerRadius = 10
-            cell.msgView.clipsToBounds = true
-
-        cell.viewImage.isHidden = true
-
-        cell.imgUser.layer.masksToBounds = false
-        cell.imgUser.layer.cornerRadius =  cell.imgUser.frame.height/2
-        cell.imgUser.clipsToBounds = true
-            return cell
+        ///////////////////////////Old-------------------------------
+        
+            
+        
+        ///////////////////////////Old-------------------------------
 //        }
 //        else
 //        {
@@ -167,13 +325,139 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
     {
-        
-        self.view.endEditing(true)
+//        guard let text = textField.text else { return true }
+//        textField.text = ""
+        view.endEditing(true)
+//        let data = [Constants.MessageFields.text: text]
+//        sendMessage(withData: data)
         return true
     }
     //------------------------------------
     //MARK: User Define Function
     //------------------------------------
+    
+    //Firebase Chat----------------------------
+    
+    //var uid = (UserDefaults.standard.string(forKey: "email") ?? ""))
+
+    
+    
+    
+//    func register_user(String surname, String givenname, String uid, final String organization)
+//    {
+//    mDatabase= FirebaseDatabase.getInstance().getReference().child("users");
+//    Map userMap = new HashMap();
+//    userMap.put("device_token", FirebaseInstanceId.getInstance().getToken());
+//    userMap.put("surname", surname);
+//    userMap.put("organization", organization);
+//    userMap.put("givenname", givenname);
+//    mDatabase.child(uid).setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>
+//    () {
+//    @Override
+//    public void onComplete(@NonNull Task<Void> task1) {
+//    if (task1.isSuccessful()) {
+//    onBackPressed();
+//    } else {
+//    Toast.makeText(getApplicationContext(), "YOUR NAME IS NOT REGISTERED... MAKE
+//    NEW ACCOUNT-- ", Toast.LENGTH_SHORT).show();
+//    }
+//    }
+//    });
+//    }
+    
+    
+    
+    
+    
+    
+        deinit {
+          if let refHandle = _refHandle  {
+            self.ref.child(uid).removeObserver(withHandle: refHandle)
+          }
+        }
+
+        func configureDatabase() {
+            
+            let timeDic = ["time_stamp": Date().timeIntervalSince1970]
+            
+                
+                Database.database().reference().child("chats").child(uid).child(chatUserId).setValue(timeDic, withCompletionBlock: {err, ref in
+                    
+                    
+                    })
+                Database.database().reference().child("chats").child(chatUserId).child(uid).setValue(timeDic, withCompletionBlock: {err, ref in
+                
+                
+                })
+            
+            ref = Database.database().reference().child("messages").child(uid).child(chatUserId)
+          // Listen for new messages in the Firebase database
+            _refHandle = self.ref.observe(.childAdded, with: { [weak self] (snapshot) -> Void in
+            guard let strongSelf = self else { return }
+            strongSelf.messages.append(snapshot)
+                strongSelf.tblChat.reloadData()
+          })
+        }
+
+        func configureStorage() {
+          storageRef = Storage.storage().reference()
+        }
+
+        func configureRemoteConfig() {
+          remoteConfig = RemoteConfig.remoteConfig()
+          // Create Remote Config Setting to enable developer mode.
+          // Fetching configs from the server is normally limited to 5 requests per hour.
+          // Enabling developer mode allows many more requests to be made per hour, so developers
+          // can test different config values during development.
+          let remoteConfigSettings = RemoteConfigSettings(developerModeEnabled: true)
+          remoteConfig.configSettings = remoteConfigSettings
+        }
+
+        func fetchConfig() {
+          var expirationDuration: Double = 3600
+          // If in developer mode cacheExpiration is set to 0 so each fetch will retrieve values from
+          // the server.
+          if self.remoteConfig.configSettings.isDeveloperModeEnabled {
+            expirationDuration = 0
+          }
+
+          // cacheExpirationSeconds is set to cacheExpiration here, indicating that any previously
+          // fetched and cached config would be considered expired because it would have been fetched
+          // more than cacheExpiration seconds ago. Thus the next fetch would go to the server unless
+          // throttling is in progress. The default expiration duration is 43200 (12 hours).
+          remoteConfig.fetch(withExpirationDuration: expirationDuration) { [weak self] (status, error) in
+            if status == .success {
+                print("Config fetched!", self?.messages)
+              guard let strongSelf = self else { return }
+              strongSelf.remoteConfig.activateFetched()
+              let friendlyMsgLength = strongSelf.remoteConfig["friendly_msg_length"]
+              if friendlyMsgLength.source != .static {
+                strongSelf.msglength = friendlyMsgLength.numberValue!
+                print("Friendly msg length config: \(strongSelf.msglength)")
+              }
+            } else {
+              print("Config not fetched")
+              if let error = error {
+                print("Error \(error)")
+              }
+            }
+          }
+        }
+    
+    
+    func sendMessage(withData data: [String: String]) {
+      var mdata = data
+      mdata[Constants.MessageFields.name] = (UserDefaults.standard.string(forKey: "givenName") ?? "")
+//      if let photoURL = Auth.auth().currentUser?.photoURL {
+//        mdata[Constants.MessageFields.photoURL] = photoURL.absoluteString
+//      }
+
+      // Push data to Firebase Database
+      self.ref.child("messages").childByAutoId().setValue(mdata)
+    }
+    
+    //Firebase Chat----------------------------
+    
     
    @objc func keyboardWillShow(notification: NSNotification)
     {
@@ -332,6 +616,72 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
         navigationController?.popViewController(animated: true)
     }
     
+    @IBAction func btnSendTUI(_ sender: UIButton)
+    {
+        if firebaseChatOrAdmin == 0
+        {
+            if txtField.text != ""
+            {
+                let rootRef = Database.database().reference()
+                
+                let curr_user_ref = "messages/" + uid + "/" + chatUserId
+                let chat_user_ref = "messages/" + chatUserId + "/" + uid
+                
+                
+                let userMsgPush = rootRef.child("messages").child(uid).child(chatUserId).childByAutoId()
+                let pushKey = userMsgPush.key!
+                print(Date().timeIntervalSince1970.bitPattern)
+                print(Date().timeIntervalSince1970.exponent)
+                print(Date().timeIntervalSince1970.exponentBitPattern)
+                let messageDic = ["message": txtField.text!, "seen": false, "type":"text", "time": Date().timeIntervalSince1970, "from": uid] as [String : Any]
+                
+                if chatUserId == uid
+                {
+                    let messageUserDic = ["\(curr_user_ref)/\(pushKey)": messageDic]
+                    print(messageUserDic)
+                    
+                    
+                    rootRef.updateChildValues( messageUserDic, withCompletionBlock: { error, ref in
+                        if error != nil
+                        {
+                            
+                        }
+                        else
+                        {
+                            self.view.endEditing(true)
+                            self.txtField.text = ""
+                        }
+                        
+                    })
+                }
+                else
+                {
+                    let messageUserDic = ["\(curr_user_ref)/\(pushKey)": messageDic, "\(chat_user_ref)/\(pushKey)": messageDic]
+                    print(messageUserDic)
+                    
+                    
+                    rootRef.updateChildValues( messageUserDic, withCompletionBlock: { error, ref in
+                        if error != nil
+                        {
+                            
+                        }
+                        else
+                        {
+                            self.view.endEditing(true)
+                            self.txtField.text = ""
+                        }
+                        
+                    })
+                }
+                
+                
+                
+            }
+            
+            
+            
+        }
+    }
     
     //------------------------------------
     //MARK:Web services

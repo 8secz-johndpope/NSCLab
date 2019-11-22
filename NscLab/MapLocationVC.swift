@@ -15,8 +15,10 @@ class MapLocationVC: UIViewController {
        //-----------------------
    
   
+    @IBOutlet weak var imgLocation: UIImageView!
     
     @IBOutlet weak var lblLocation: UILabel!
+    
     //-------------------------
       // MARK: Identifiers
       //-------------------------
@@ -31,7 +33,8 @@ class MapLocationVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        lblLocation.text! = locationName
+        lblLocation.text! = locationAddress
+        imgLocation.sd_setImage(with: URL(string: locationImageUrl), placeholderImage: UIImage(named: "noImage"), options: .refreshCached, completed: nil)
         // Do any additional setup after loading the view.
     }
     

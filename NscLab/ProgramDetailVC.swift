@@ -46,9 +46,6 @@ class ProgramDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSour
     var addr = String()
     var timer = Timer()
     
-  
-  
-    
     //----------------------------
     //MARK: View Life Cycle
     //----------------------------
@@ -63,6 +60,7 @@ class ProgramDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSour
      HeaderView.backgroundColor = Colors.HeaderColor
         SubDetailsView.backgroundColor = Colors.HeaderColor
             
+        
         
         lblTittle.text = tittleName
         lblDate.text = date
@@ -108,7 +106,7 @@ class ProgramDetailVC: UIViewController ,UITableViewDelegate,UITableViewDataSour
     
 
         cell.lblUserName.text   = presentationData[indexPath.row]["topic"].stringValue
-        cell.lblAddress.text = presentationData[indexPath.row]["toTime"].stringValue  + " - " + presentationData[indexPath.row]["fromTime"].stringValue
+        cell.lblAddress.text = presentationData[indexPath.row]["toTime"].stringValue[0..<5]  + " - " + presentationData[indexPath.row]["fromTime"].stringValue[0..<5]
 
 
         return cell

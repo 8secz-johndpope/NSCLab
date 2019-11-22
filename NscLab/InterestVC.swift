@@ -31,7 +31,7 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
     var iPhoneXorNot = 0
     var interestData = JSON()
     var timer = Timer()
-    
+    var interestId = Int()
      //----------------------------
        //MARK: View Life Cycle
        //----------------------------
@@ -60,6 +60,14 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
         messageView.layer.borderWidth = 0.5
                 messageView.layer.cornerRadius = 6
                 messageView.clipsToBounds = true
+        
+        
+        
+        let layout = MyLeftCustomFlowLayout()
+        layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        colInteresrtView.collectionViewLayout = layout
+
+        //colInteresrtView.collectionViewLayout = LeftAlignedCollectionViewFlowLayout()
          // Do any additional setup after loading the view.
         
         
@@ -84,12 +92,12 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ColInterestCell", for: indexPath) as! ColInterestCell
         
         
-        cell.lblInterest.text = interestData[indexPath.row]["interest_name"].stringValue
+        cell.lblInterest.text = " \(interestData[indexPath.row]["interest_name"].stringValue)  "
+        cell.btnRemove.tag = indexPath.row
         
-        
-        cell.layer.cornerRadius = cell.frame.size.height/2.5
+        cell.lblInterest.layer.cornerRadius = 20
                    
-                   cell.clipsToBounds = true
+        cell.lblInterest.clipsToBounds = true
                 
           
         return cell
@@ -101,6 +109,7 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
       //------------------------------------
       //MARK: User Define Function
       //------------------------------------
+    
       
     @objc func InternetAvailable()
        {
@@ -114,6 +123,19 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
               PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
            }
        }
+    
+    @objc func removeInternetAvailable()
+    {
+        if Connectivity.isConnectedToInternet()
+        {
+            removeInternetAvailable()
+        }
+        else
+        {
+            self.stopAnimating()
+           PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+        }
+    }
        
        
     @objc func keyboardWillShow(notification: NSNotification)
@@ -207,6 +229,7 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
     
     @IBAction func btnSaveTUI(_ sender: UIButton)
     {
+        
         addInterestApi()
     }
     
@@ -215,6 +238,16 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
          self.navigationController?.popViewController(animated: true)
      }
       
+    @IBAction func btnRemoveTUI(_ sender: UIButton)
+    {
+        if interestData.count > 1
+        {
+            interestId = interestData[sender.tag]["interest_id"].intValue
+            removeInterestApi()
+        }
+        
+    }
+    
     //-----------------------
     // MARK: Web Service
     //-----------------------
@@ -254,7 +287,7 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
                                   else
                                   {
                                       self.stopAnimating()
-
+                                    self.txtInterest.text = ""
                                     self.InterestListApi()
                                   }
                                }
@@ -334,6 +367,58 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
                    }
                }
         
+    func removeInterestApi()
+    {
+
+        if Connectivity.isConnectedToInternet()
+        {
+
+          let parameter = ["type":"deleteInterest","attendees_id":UserDefaults.standard.integer(forKey: "attendeesid"),"interest_id": interestId] as [String : Any]
+
+         print(parameter)
+            timer.invalidate()
+            self.start()
+
+         let url = appDelegate.ApiBaseUrl + parameterConvert(pram: parameter)
+            print(url)
+            Alamofire.request(url, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: nil).validate().responseJSON
+                {
+                    response in
+                    switch response.result
+                    {
+                    case .success:
+                     if response.response?.statusCode == 200
+                     {
+
+                         let result = JSON(response.value!)
+
+                     print(result)
+                     if result["status"].boolValue == false
+                        {
+
+                          PopUp(Controller: self, title:  "Error!", message: result["msg"].stringValue, type: .error, time: 2)
+
+                            self.stopAnimating()
+                        }
+                        else
+                        {
+                            self.stopAnimating()
+                          
+                          self.InterestListApi()
+                        }
+                     }
+                    case .failure(let error):
+                        print(error)
+                    }
+            }
+
+        }
+        else
+        {
+            self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.removeInternetAvailable), userInfo: nil, repeats: true)
+            PopUp(Controller: self, title: "Internet Connectivity", message: "Internet Not Available", type: .error, time: 2)
+        }
+    }
 
 
  }

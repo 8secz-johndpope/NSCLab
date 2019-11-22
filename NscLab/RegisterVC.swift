@@ -10,6 +10,7 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 import DropDown
+import FirebaseDatabase
 
 class RegisterVC: UIViewController,UITextFieldDelegate {
 
@@ -532,7 +533,25 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
             scrollView.contentInset = .zero
             scrollView.scrollIndicatorInsets = .zero
         }
-        
+    
+    func register_user(surname: String, givenname: String, uid: String, organization: String)
+    {
+        let mDatabase = Database.database().reference().child("users")
+        let parameter = ["device_token": appDelegate.FcmId, "surname": surname, "organization": organization, "givenname": givenname]
+
+        mDatabase.child(uid).setValue( parameter, withCompletionBlock: {error,ref in
+            if error == nil
+            {
+                print("Registered")
+                
+            }
+            else
+            {
+                print(error?.localizedDescription)
+            }
+        })
+    }
+    
         //-----------------------
         //MARK: Button action
         //-----------------------
@@ -593,11 +612,6 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
                       {
                           PopUp(Controller: self, title: "Oops!", message: "Please fill Phonenumber", type: .error, time: 3)
                       }
-
-             else if validePhoneNumber(text: txtPhone.text! as NSString)
-                 {
-                     PopUp(Controller: self, title: "Oops!", message: "Please enter valid 10 digit phone number", type: .error, time: 3)
-                 }
                 
                 else if (txtPassword.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                  {
@@ -687,7 +701,7 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
                             {
                                 self.stopAnimating()
 
-
+                                self.register_user(surname: self.txtSurname.text!, givenname: self.txtGivenName.text!, uid: self.txtEmail.text!.replacingOccurrences(of: ".", with: "@"), organization: self.txtOrganizer.text!)
 
                                 let obj = self.storyboard?.instantiateViewController(withIdentifier: "LoginVc") as! LoginVc
                                 

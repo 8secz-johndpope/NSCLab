@@ -46,6 +46,7 @@ class EditProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
     
     @IBOutlet weak var btnCountry: UIButton!
     
+    @IBOutlet weak var btnSave: UIButton!
     //-------------------------
     // MARK: Identifiers
     //-------------------------
@@ -424,11 +425,11 @@ class EditProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
                                      
                                     UserDefaults.standard.set(self.txtPhone.text!, forKey: "phoneNumber")
                                        UserDefaults.standard.set(self.txtCountry.text!, forKey: "country")
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now()+0.5)
-                                    {
-                                        self.navigationController?.popViewController(animated: true)
-                                    }
+                                    self.btnSave.setTitle("Saved", for: .normal)
+//                                    DispatchQueue.main.asyncAfter(deadline: .now()+0.5)
+//                                    {
+//                                        self.navigationController?.popViewController(animated: true)
+//                                    }
                                     
 
                                 }
@@ -452,6 +453,7 @@ class EditProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
      func uploadImage()
       {
         
+        self.start()
         var parameter = [String : Any]()
         
         parameter = ["type":"attendeesProfile","attendees_id":UserDefaults.standard.integer(forKey: "attendeesid")]
@@ -527,6 +529,7 @@ class EditProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
 //                              self.uploadingView.isHidden = true
 
                           }
+                        self.stopAnimating()
                           
                       }
                       

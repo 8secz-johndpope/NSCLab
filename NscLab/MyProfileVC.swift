@@ -60,9 +60,14 @@ class MyProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigatio
             lblOrganization.text =  UserDefaults.standard.string(forKey: "organization") ?? ""
       
             
-            profileApi()
+            
             // Do any additional setup after loading the view.
         }
+    
+    override func viewWillAppear(_ animated: Bool)
+    {
+        profileApi()
+    }
     
     
     //--------------------------
@@ -216,6 +221,7 @@ class MyProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigatio
                              actionSheet.popoverPresentationController?.sourceRect = sender.frame
                             self.present(actionSheet, animated: true, completion: nil)
       }
+    
     
     //-----------------------
       // MARK: Web Service

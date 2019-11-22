@@ -19,6 +19,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
     //-------------------
     
    
+    @IBOutlet weak var btnLogout: UIButton!
     
     @IBOutlet weak var HeaderView: UIView!
     
@@ -37,7 +38,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
     
     var conferenceData = JSON()
     
-    var sections = ["Upcoming Conference","Attending Conference","Past Conference"]
+    var sections = ["Upcoming Conference","Attending Conference","Past Events"]
             
     
     var timer = Timer()
@@ -56,16 +57,22 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
       
         
         
-           upcomingConferenceApi()
+           
         
-       pastConferenceApi()
-                
-        attendingConferenceApi()
+       
         
-     
+        btnLogout.changeButtonImageColor(color: UIColor.white, mode: .normal)
     
         
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool)
+    {
+        upcomingConferenceApi()
+        pastConferenceApi()
+                
+        attendingConferenceApi()
     }
     
     override func viewDidAppear(_ animated: Bool)
@@ -108,15 +115,15 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
             {
                case 0:
                   
-                return upcomingConferenceData.count
+                return upcomingConferenceData.count == 0 ? 2 : upcomingConferenceData.count
              
             case 1:
             
-                return attendingConferenceData.count
+                return attendingConferenceData.count == 0 ? 2 : attendingConferenceData.count
                 
             case 2:
                 
-                 return pastconferenceData.count
+                 return pastconferenceData.count == 0 ? 2 : pastconferenceData.count
              
             default:
                 
@@ -134,36 +141,94 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
        
         switch (indexPath.section) {
            case 0:
-              
+            if upcomingConferenceData.count == 0
+            {
+                cell.accessoryType = .none
+                cell.lblTittle.text = ""
+                
+                cell.lblDate.text = ""
+
+                
+                cell.imgCon.isHidden = true
+                    cell.lblCalenderDate.text = ""
+            }
+            else
+            {
+                cell.accessoryType = .disclosureIndicator
                 cell.lblTittle.text =   upcomingConferenceData[indexPath.row]["topic"].stringValue
                 
-                cell.lblDate.text = upcomingConferenceData[indexPath.row]["date"].string
+                cell.lblDate.text = dmyFormat.string(from: ymdFormat.date(from: upcomingConferenceData[indexPath.row]["date"].string ?? "") ?? Date())
 
                 let strarray = upcomingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
-                   
+                cell.imgCon.isHidden = false
                 print(strarray)
 
                     cell.lblCalenderDate.text = strarray[2]
+            }
+                
 
            case 1:
               
-          
-            cell.lblTittle.text =   attendingConferenceData[indexPath.row]["topic"].stringValue
             
-            cell.lblDate.text = attendingConferenceData[indexPath.row]["date"].string
-            
-            let strarray = attendingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
+            if attendingConferenceData.count == 0
+            {
+                cell.accessoryType = .none
+                cell.lblTittle.text = ""
+                
+                cell.lblDate.text = ""
 
-            print(strarray)
+                cell.imgCon.isHidden = true
+                    cell.lblCalenderDate.text = ""
+            }
+            else
+            {
+                cell.accessoryType = .disclosureIndicator
+                cell.lblTittle.text =   attendingConferenceData[indexPath.row]["topic"].stringValue
+                
+                cell.lblDate.text = dmyFormat.string(from: ymdFormat.date(from: attendingConferenceData[indexPath.row]["date"].string ?? "") ?? Date())
+                
+                let strarray = attendingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
+
+                print(strarray)
+                
+                cell.lblCalenderDate.text = strarray[2]
+                cell.imgCon.isHidden = false
+                
+            }
             
-            cell.lblCalenderDate.text = strarray[2]
 
             
         case 2:
             
-            cell.lblTittle.text = pastconferenceData[indexPath.row]["topic"].stringValue
+            if pastconferenceData.count == 0
+            {
+                cell.accessoryType = .none
+                cell.lblTittle.text = ""
+                
+                cell.lblDate.text = ""
+
+                cell.imgCon.isHidden = true
+                    cell.lblCalenderDate.text = ""
+            }
+            else
+            {
+                
+                cell.accessoryType = .none
+                cell.lblTittle.text = pastconferenceData[indexPath.row]["topic"].stringValue
+                
+                cell.lblDate.text = dmyFormat.string(from: ymdFormat.date(from: pastconferenceData[indexPath.row]["date"].string ?? "") ?? Date())
+                
+                
+                let strarray = pastconferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
+
+                print(strarray)
+                
+                cell.lblCalenderDate.text = strarray[2]
+                cell.imgCon.isHidden = false
+                
+            }
             
-            cell.lblDate.text = pastconferenceData[indexPath.row]["date"].string
+            
             
         default: break
             
@@ -180,29 +245,36 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                       switch (indexPath.section)
                       {
                                  case 0:
-                                  let obj = storyboard?.instantiateViewController(withIdentifier: "ConferenceDetailVC") as! ConferenceDetailVC
+                                    if upcomingConferenceData.count != 0
+                                    {
+                                        let obj = storyboard?.instantiateViewController(withIdentifier: "ConferenceDetailVC") as! ConferenceDetailVC
 
-                                   obj.topic = upcomingConferenceData[indexPath.row]["topic"].stringValue
-                                    obj.des = upcomingConferenceData[indexPath.row]["description"].stringValue
-                                  obj.date = upcomingConferenceData[indexPath.row]["date"].stringValue
+                                         obj.topic = upcomingConferenceData[indexPath.row]["topic"].stringValue
+                                          obj.des = upcomingConferenceData[indexPath.row]["description"].stringValue
+                                        obj.date = upcomingConferenceData[indexPath.row]["date"].stringValue
 
-                                  conferenceId = upcomingConferenceData[indexPath.row]["conference_id"].stringValue
+                                        conferenceId = upcomingConferenceData[indexPath.row]["conference_id"].stringValue
+                                        obj.isAttending = upcomingConferenceData[indexPath.row]["attend"].intValue == 0 ? false : true
 
 
-
-                                  navigationController?.pushViewController(obj, animated: true)
+                                        navigationController?.pushViewController(obj, animated: true)
+                                    }
+                                  
                             
                             case 1:
-                                     
-                                 let obj = storyboard?.instantiateViewController(withIdentifier: "CyberMissionsVC") as! CyberMissionsVC
+                                     if attendingConferenceData.count != 0
+                                     {
+                                        let obj = storyboard?.instantiateViewController(withIdentifier: "CyberMissionsVC") as! CyberMissionsVC
 
-                                           obj.tittleName = attendingConferenceData[indexPath.row]["topic"].stringValue
+                                              obj.tittleName = attendingConferenceData[indexPath.row]["topic"].stringValue
 
-                                           conferenceId = attendingConferenceData[indexPath.row]["conference_id"].stringValue
+                                              conferenceId = attendingConferenceData[indexPath.row]["conference_id"].stringValue
 
-                                            print(conferenceId)
+                                               print(conferenceId)
 
-                                     navigationController?.pushViewController(obj, animated: true)
+                                        navigationController?.pushViewController(obj, animated: true)
+                                     }
+                                 
                                  
                          default: break
     }
@@ -293,7 +365,15 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
        //-----------------------
        
 
-       
+    @IBAction func btnLogoutTUI(_ sender: UIButton)
+    {
+        let obj = storyboard?.instantiateViewController(withIdentifier: "LoginVc") as! LoginVc
+
+         UserDefaults.standard.set(false, forKey: "isUserLoggedIn")
+        
+        navigationController?.pushViewController(obj, animated: true)
+    }
+    
        //-----------------------
        // MARK: Web Service
        //-----------------------

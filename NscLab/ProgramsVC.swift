@@ -29,6 +29,7 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
     var programData = JSON()
     var programId = String()    
     var programList = JSON()
+    
     //------------------------
       // MARK: View Life Cycle
       //------------------------
@@ -46,9 +47,14 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
         
         self.tblView.tableFooterView = UIView()
         
+        dmmmyFormat.dateFormat = "dd-MMM-yyyy"
+        
         // Do any additional setup after loading the view.
     }
-    
+    override func viewWillDisappear(_ animated: Bool)
+    {
+        dmmmyFormat.dateFormat = "dd MMM yyyy"
+    }
     //--------------------------
     // MARK: Table View Methods
     //--------------------------
@@ -82,7 +88,7 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
         
         cell.lblAddress.isHidden = true
         
-        cell.lblTime.text = programList[indexPath.section]["list"][indexPath.row]["toTime"].stringValue  + " - " + programList[indexPath.section]["list"][indexPath.row]["fromTime"].stringValue
+        cell.lblTime.text = programList[indexPath.section]["list"][indexPath.row]["toTime"].stringValue[0..<5]  + " - " + programList[indexPath.section]["list"][indexPath.row]["fromTime"].stringValue[0..<5]
         
         
        
@@ -99,9 +105,9 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
         
         obj.tittleName = programList[indexPath.section]["list"][indexPath.row]["topic"].stringValue
         
-        obj.date = programList[indexPath.section]["list"][indexPath.row]["toDate"].stringValue + " - " + programList[indexPath.section]["list"][indexPath.row]["from_date"].stringValue
+        obj.date = dmmmyFormat.string(from: ymdFormat.date(from: programList[indexPath.section]["list"][indexPath.row]["toDate"].stringValue) ?? Date()) + " - " + dmmmyFormat.string(from: ymdFormat.date(from: programList[indexPath.section]["list"][indexPath.row]["from_date"].stringValue) ?? Date())
         
-        obj.time = programList[indexPath.section]["list"][indexPath.row]["toTime"].stringValue  + " - " + programList[indexPath.section]["list"][indexPath.row]["fromTime"].stringValue
+        obj.time = programList[indexPath.section]["list"][indexPath.row]["toTime"].stringValue[0..<5]  + " - " + programList[indexPath.section]["list"][indexPath.row]["fromTime"].stringValue[0..<5]
         obj.desc = programList[indexPath.section]["list"][indexPath.row]["description"].stringValue
         
         obj.addr = programList[indexPath.section]["list"][indexPath.row]["address"].stringValue
@@ -206,7 +212,7 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
                        self.programData = result["program_list"]
                         let programArr = (result["program_list"].arrayObject! as NSArray).mutableCopy() as! NSMutableArray
                         
-                        let sortProgramArr = programArr.sorted(by: { (($0 as! NSDictionary)["from_date"] as! String) < (($1 as! NSDictionary)["from_date"] as! String) })
+                        let sortProgramArr = programArr.sorted(by: { (($0 as! NSDictionary)["toDate"] as! String) < (($1 as! NSDictionary)["toDate"] as! String) })
                         var dateStr = ""
                         //var finalDic = NSMutableDictionary()
                         let arr = NSMutableArray()
@@ -217,17 +223,17 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
                             
                             if i == 0
                             {
-                                dateStr = dic["from_date"] as! String
+                                dateStr = dic["toDate"] as! String
                                 arr.add(dic)
                             }
-                            else if (dic["from_date"] as! String) == dateStr
+                            else if (dic["toDate"] as! String) == dateStr
                             {
                                 arr.add(dic)
                             }
-                            else if (dic["from_date"] as! String) != dateStr
+                            else if (dic["toDate"] as! String) != dateStr
                             {
-                                finalArray.add(["date":dateStr, "list": arr.copy()])
-                                dateStr = (dic["from_date"] as! String)
+                                finalArray.add(["date":dmmmyFormat.string(from: ymdFormat.date(from: dateStr) ?? Date()), "list": arr.copy()])
+                                dateStr = (dic["toDate"] as! String)
                                 arr.removeAllObjects()
                                 arr.add(dic)
                             }
@@ -235,7 +241,7 @@ class ProgramsVC: UIViewController , UITableViewDataSource, UITableViewDelegate{
                             
                             if i == sortProgramArr.count-1
                             {
-                                finalArray.add(["date":dateStr, "list": arr])
+                                finalArray.add(["date":dmmmyFormat.string(from: ymdFormat.date(from: dateStr) ?? Date()), "list": arr])
                             }
                         }
                         self.programList = JSON(finalArray)
