@@ -79,6 +79,7 @@ class MapVC: UIViewController,UISearchBarDelegate{
         btnSegment.isEnabled = true
         isMap = true
         btnSearch.isHidden = true
+        searchBar.isHidden = true
         btnSegment.selectedSegmentIndex = 1
         VC = storyboard?.instantiateViewController(withIdentifier: "MapLocationVC") as! MapLocationVC
         

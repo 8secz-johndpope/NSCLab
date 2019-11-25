@@ -166,7 +166,7 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
 
                 cell.lblSentMsg.text = jsonMsg["message"].stringValue
 
-                cell.lblTime.text =  hmaFormat.string(from: Date(timeIntervalSince1970: jsonMsg["time"].doubleValue))
+                cell.lblTime.text =  jsonMsg["time"].stringValue
 
                 //            cell.lblDate.text = (dic["sent_date"] as! String)
 
@@ -178,6 +178,7 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
                         cell.imgUser.layer.masksToBounds = false
                         cell.imgUser.layer.cornerRadius =  cell.imgUser.frame.height/2
                         cell.imgUser.clipsToBounds = true
+                cell.imgUser.sd_setImage(with: URL(string: jsonMsg["image_url"].stringValue), placeholderImage: UIImage(named: "icon_user"), options: .refreshCached, completed: nil)
                             return cell
             }
             else
@@ -186,7 +187,7 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
 
                             cell.lblRecievedMsg.text! = jsonMsg["message"].stringValue
 
-                            cell.lblTime.text =  hmaFormat.string(from: Date(timeIntervalSince1970: jsonMsg["time"].doubleValue))
+                            cell.lblTime.text =  jsonMsg["time"].stringValue
 
                 //            cell.lblDate.text = (dic["sent_date"] as! String)
 
@@ -198,6 +199,7 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
                         cell.imgUser.layer.masksToBounds = false
                         cell.imgUser.layer.cornerRadius =  cell.imgUser.frame.height/2
                         cell.imgUser.clipsToBounds = true
+                cell.imgUser.sd_setImage(with: URL(string: jsonMsg["image_url"].stringValue), placeholderImage: UIImage(named: "icon_user"), options: .refreshCached, completed: nil)
                             return cell
             }
             
@@ -630,10 +632,11 @@ class ChatVC: UIViewController ,UITextFieldDelegate,UITableViewDelegate,UITableV
                 
                 let userMsgPush = rootRef.child("messages").child(uid).child(chatUserId).childByAutoId()
                 let pushKey = userMsgPush.key!
-                print(Date().timeIntervalSince1970.bitPattern)
-                print(Date().timeIntervalSince1970.exponent)
-                print(Date().timeIntervalSince1970.exponentBitPattern)
-                let messageDic = ["message": txtField.text!, "seen": false, "type":"text", "time": Date.currentTimeStamp, "from": uid] as [String : Any]
+                
+                hmaFormat.timeZone = TimeZone(identifier: "Australia/Sydney")
+                
+                print(hmaFormat.string(from: Date()))
+                let messageDic = ["message": txtField.text!, "seen": false, "type":"text", "time": hmaFormat.string(from: Date()), "from": uid, "image_url":(UserDefaults.standard.string(forKey: "profilePic")) ?? ""] as [String : Any]
                 
                 if chatUserId == uid
                 {

@@ -45,7 +45,7 @@ class MapLocationVC: UIViewController {
 
     @IBAction func btnCopyTUI(_ sender: UIButton)
     {
-        UIPasteboard.general.string = locationName
+        UIPasteboard.general.string = lblLocation.text!
              
              PopUp(Controller: self, title: "", message: "Copied", type: .success, time: 2)
     }

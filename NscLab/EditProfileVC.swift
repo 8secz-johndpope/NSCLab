@@ -261,7 +261,40 @@ class EditProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
         
     @IBAction func btnSaveTUI(_ sender: UIButton)
     {
-        updateProfileApi()
+        if (txtSurname.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
+        {
+            PopUp(Controller: self, title: "Oops!", message: "Lastname is required", type: .error, time: 3)
+        }
+        else if (txtGivenName.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
+
+        {
+            PopUp(Controller: self, title: "Oops!", message: "Firstname is required", type: .error, time: 3)
+
+        }
+
+        else if (txtOrganization.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
+        {
+            PopUp(Controller: self, title: "Oops!", message: "Organization is required", type: .error, time: 3)
+        }
+
+        else if (txtPhone.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
+        {
+            PopUp(Controller: self, title: "Oops!", message: "Phone number is required", type: .error, time: 3)
+        }
+            
+
+//            else if (txtWechat.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
+//            {
+//                 PopUp(Controller: self, title: "Oops!", message: "Please fill WechatID", type: .error, time: 3)
+//            }
+            
+
+
+        else
+        {
+            updateProfileApi()
+        }
+        
     }
     
      @IBAction func btnBackTUI(_ sender: UIButton)
@@ -400,7 +433,7 @@ class EditProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
                              {
 
                                  let result = JSON(response.value!)
-
+                                self.updateProfile = result
                              print(result)
                              if result["status"].boolValue == false
                                 {
@@ -414,7 +447,7 @@ class EditProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
                                     self.stopAnimating()
 
  
-                                    PopUp(Controller: self, title:  "", message: self.updateProfile["msg"].stringValue, type: .success, time: 2)
+                                    PopUp(Controller: self, title:  "Done!", message: self.updateProfile["msg"].stringValue, type: .success, time: 2)
                                     
                                     UserDefaults.standard.set(self.txtWechatId.text!, forKey: "wechatid")
                                     UserDefaults.standard.set(self.txtOrganization.text!, forKey: "organization")
@@ -519,7 +552,7 @@ class EditProfileVC: UIViewController,UIImagePickerControllerDelegate, UINavigat
                           {
                               
                               print(result)
-                              
+                              UserDefaults.standard.set("http://"+(result["file_url"] as! String), forKey: "profilePic")
                             PopUp(Controller: self, title: "Done", message: (result["msg"] as! String), type: .error, time: 2)
                             
 //                              self.editImage = (result["image"] as! String)

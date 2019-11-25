@@ -137,7 +137,7 @@ class PresentationDetailVC: UIViewController {
         tittleHeader = "Speakers"
         obj.isFromPrsentation = true
         obj.presentationId = presentationId
-        
+        obj.presentationConfId = self.presentationDetailData["conference_id"].stringValue
                                                             
         self.navigationController?.pushViewController(obj, animated: true)
     }

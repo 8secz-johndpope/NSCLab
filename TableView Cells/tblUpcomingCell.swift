@@ -22,6 +22,7 @@ class tblUpcomingCell: UITableViewCell {
     
     @IBOutlet weak var lblCalenderDate: UILabel!
     
+    @IBOutlet weak var imgWidth: NSLayoutConstraint!
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

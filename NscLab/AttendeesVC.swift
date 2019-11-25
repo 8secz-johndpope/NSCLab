@@ -52,6 +52,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
      
      var firstNameOrLastNameOrOrg = 2
 
+    var presentationConfId = String()
     //------------------------
       // MARK: View Life Cycle
       //------------------------
@@ -157,9 +158,49 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
            let cell =  tableView.dequeueReusableCell(withIdentifier: "tblAttendeesCell") as! tblAttendeesCell
            
 
-      
+        
+            if firstNameOrLastNameOrOrg == 0
+            {
+                let boldText = attendessList[indexPath.section]["list"][indexPath.row]["givenName"].stringValue
+                let attrs = [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)]
+                let attributedString = NSMutableAttributedString(string:boldText, attributes:attrs)
+
+                let normalText = " "+attendessList[indexPath.section]["list"][indexPath.row]["surname"].stringValue
+                let normalString = NSMutableAttributedString(string:normalText)
+
+                attributedString.append(normalString)
+                
+                cell.lblUserName.attributedText = attributedString
+                cell.lblUserMsg.attributedText = NSAttributedString(string: attendessList[indexPath.section]["list"][indexPath.row]["organization"].stringValue)
+            }
+            else if firstNameOrLastNameOrOrg == 1
+            {
+                let boldText = attendessList[indexPath.section]["list"][indexPath.row]["surname"].stringValue
+                let attrs = [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)]
+                let attributedString = NSMutableAttributedString(string:boldText, attributes:attrs)
+
+                let normalText = " "+attendessList[indexPath.section]["list"][indexPath.row]["givenName"].stringValue
+                let normalString = NSMutableAttributedString(string:normalText)
+
+                attributedString.append(normalString)
+                cell.lblUserName.attributedText = attributedString
+                cell.lblUserMsg.attributedText = NSAttributedString(string: attendessList[indexPath.section]["list"][indexPath.row]["organization"].stringValue)
+            }
+            else
+            {
+                let boldText = attendessList[indexPath.section]["list"][indexPath.row]["organization"].stringValue
+                let attrs = [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: 15)]
+                let attributedString = NSMutableAttributedString(string:boldText, attributes:attrs)
+
+                let normalText = ""
+                let normalString = NSMutableAttributedString(string:normalText)
+
+                attributedString.append(normalString)
                 cell.lblUserName.text = attendessList[indexPath.section]["list"][indexPath.row]["givenName"].stringValue + " " + attendessList[indexPath.section]["list"][indexPath.row]["surname"].stringValue
-                cell.lblUserMsg.text = attendessList[indexPath.section]["list"][indexPath.row]["organization"].stringValue
+                cell.lblUserMsg.attributedText = attributedString
+            }
+      
+                
                
 
         
@@ -169,7 +210,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
         if strArr.count > 1
         {
            
-            let str = String(strArr[0].first!) + String(strArr[1].first!)
+            let str = String(strArr[0][0]) + String(strArr[1][0])
     
             cell.lblNameImg.text = str.uppercased()
             
@@ -879,7 +920,7 @@ class AttendeesVC: UIViewController  , UITableViewDataSource, UITableViewDelegat
             {
                 if isFromPrsentation
                 {
-                    parameter = ["type":"speakerList","conference_id":conferenceId, "prsentation_id": presentationId] as [String : Any]
+                    parameter = ["type":"speakerList","conference_id":presentationConfId, "prsentation_id": presentationId] as [String : Any]
                 }
                 else
                 {

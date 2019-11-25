@@ -15,14 +15,22 @@ import SwiftyJSON
 import SwiftMessageBar
 
 
+func attributedText(withString string: String, boldString: String, font: UIFont) -> NSAttributedString {
+    let attributedString = NSMutableAttributedString(string: string,
+                                                 attributes: [NSAttributedString.Key.font: font])
+    let boldFontAttribute: [NSAttributedString.Key: Any] = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: font.pointSize)]
+    let range = (string as NSString).range(of: boldString)
+    attributedString.addAttributes(boldFontAttribute, range: range)
+    return attributedString
+}
 
 func PopUp(Controller: UIViewController, title: String, message: String, type: MessageType, time : Double)
 {
 //    SwiftMessageBar.showMessage(withTitle: title, message: message, type: type)
-    SwiftMessageBar.showMessage(withTitle: title, message: message, type: type, duration: time)
-//        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
-//        Controller.present(alert, animated: true, completion: nil)
+    //SwiftMessageBar.showMessage(withTitle: title, message: message, type: type, duration: time)
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        Controller.present(alert, animated: true, completion: nil)
 }
 func parameterConvert(pram: [String : Any]) -> String
 {

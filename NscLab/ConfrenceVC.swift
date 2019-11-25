@@ -109,25 +109,25 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
 //
 //     }
      
-     func numberOfSections(in tableView: UITableView) -> Int {
-         return self.sections.count
-     }
+//     func numberOfSections(in tableView: UITableView) -> Int {
+//         return self.sections.count
+//     }
     
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
         {
             switch (tableView.tag)
             {
                case 0:
-                  
-                return upcomingConferenceData.count == 0 ? 2 : upcomingConferenceData.count
+                  print(upcomingConferenceData.count)
+                return upcomingConferenceData.count// == 0 ? 2 : upcomingConferenceData.count
              
             case 1:
-            
-                return attendingConferenceData.count == 0 ? 2 : attendingConferenceData.count
+            print(attendingConferenceData.count)
+                return attendingConferenceData.count// == 0 ? 2 : attendingConferenceData.count
                 
             case 2:
-                
-                 return pastconferenceData.count == 0 ? 2 : pastconferenceData.count
+                print(pastconferenceData.count)
+                 return pastconferenceData.count// == 0 ? 2 : pastconferenceData.count
              
             default:
                 
@@ -166,7 +166,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                 let strarray = upcomingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
                 cell.imgCon.isHidden = false
                 print(strarray)
-
+                    cell.imgWidth.constant = 50
                     cell.lblCalenderDate.text = strarray[2]
                 cell.lblCalenderDate.isHidden = false
             }
@@ -195,7 +195,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                 let strarray = attendingConferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
 
                 print(strarray)
-                
+                cell.imgWidth.constant = 50
                 cell.lblCalenderDate.text = strarray[2]
                 cell.imgCon.isHidden = false
                 cell.lblCalenderDate.isHidden = false
@@ -227,7 +227,7 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
                 let strarray = pastconferenceData[indexPath.row]["date"].string!.components(separatedBy: "-")
 
                 print(strarray)
-                
+                cell.imgWidth.constant = 0
                 cell.lblCalenderDate.text = strarray[2]
                 cell.imgCon.isHidden = true
                 cell.lblCalenderDate.isHidden = true
@@ -315,7 +315,9 @@ class ConfrenceVC: UIViewController,UITableViewDelegate,UITableViewDataSource{
      {
          UIView.animate(withDuration: 0.0001)
          {
-             self.tblUpcomingView.flashScrollIndicators()
+            self.tblUpcomingView.flashScrollIndicators()
+            self.tblAttending.flashScrollIndicators()
+             self.tblPastEvents.flashScrollIndicators()
             
           
     

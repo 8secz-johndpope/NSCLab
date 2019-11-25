@@ -101,7 +101,7 @@
                                                                             <outlet property="delegate" destination="1oU-Cz-7hI" id="PAI-iC-KJ6"/>
                                                                         </connections>
                                                                     </textField>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please Enter User Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xnQ-RP-To8">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Email is required" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xnQ-RP-To8">
                                                                         <rect key="frame" x="0.0" y="84" width="300" height="16"/>
                                                                         <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="14"/>
                                                                         <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -139,7 +139,7 @@
                                                                             <outlet property="delegate" destination="1oU-Cz-7hI" id="Aj0-lA-GnJ"/>
                                                                         </connections>
                                                                     </textField>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please Enter Password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GFW-hx-ndg">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Password is required" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GFW-hx-ndg">
                                                                         <rect key="frame" x="0.0" y="84" width="300" height="16"/>
                                                                         <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="14"/>
                                                                         <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1797,8 +1797,8 @@
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vTQ-2h-Er0">
                                                 <rect key="frame" x="147" y="0.0" width="120" height="120"/>
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="AB" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zM2-yT-i2l">
-                                                        <rect key="frame" x="14.666666666666657" y="18.333333333333329" width="91" height="83.666666666666671"/>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zM2-yT-i2l">
+                                                        <rect key="frame" x="60" y="60" width="0.0" height="0.0"/>
                                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="70"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -3462,8 +3462,8 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="18e-Mr-bXT">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Photot Sharing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R6H-sC-gG0">
-                                                <rect key="frame" x="138.66666666666669" y="13" width="136.66666666666669" height="24"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Photo Sharing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R6H-sC-gG0">
+                                                <rect key="frame" x="142.33333333333337" y="13" width="129.66666666666663" height="24"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
@@ -4749,7 +4749,7 @@
                                                                             <outlet property="delegate" destination="1oU-Cz-7hI" id="Mod-YG-bDo"/>
                                                                         </connections>
                                                                     </textField>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please Enter Registered Email" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z5g-hu-fGM">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter your valid OTP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Z5g-hu-fGM">
                                                                         <rect key="frame" x="0.0" y="64" width="300" height="16"/>
                                                                         <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="14"/>
                                                                         <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -4805,7 +4805,7 @@
                                                                             <outlet property="delegate" destination="1oU-Cz-7hI" id="zD5-MU-9Ho"/>
                                                                         </connections>
                                                                     </textField>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please Enter Received Code" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="erh-l0-3uY">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Please enter your valid OTP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="erh-l0-3uY">
                                                                         <rect key="frame" x="0.0" y="64" width="300" height="16"/>
                                                                         <fontDescription key="fontDescription" name="ArialMT" family="Arial" pointSize="14"/>
                                                                         <color key="textColor" red="1" green="0.14913141730000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -5780,7 +5780,8 @@
                                                 </tableViewCellContentView>
                                                 <connections>
                                                     <outlet property="imgCon" destination="BW1-vT-Vy2" id="Vn4-85-8NI"/>
-                                                    <outlet property="lblCalenderDate" destination="zdE-6j-ALD" id="Lgg-0z-z24"/>
+                                                    <outlet property="imgWidth" destination="LEm-pc-eaM" id="CHg-K6-9H6"/>
+                                                    <outlet property="lblCalenderDate" destination="zdE-6j-ALD" id="k9F-US-0ty"/>
                                                     <outlet property="lblDate" destination="zgX-tU-JW7" id="Wfr-Lu-j6K"/>
                                                     <outlet property="lblTittle" destination="B6c-wp-Yhz" id="R8V-jO-cUc"/>
                                                 </connections>
@@ -5898,6 +5899,7 @@
                                                 </tableViewCellContentView>
                                                 <connections>
                                                     <outlet property="imgCon" destination="6uz-em-haC" id="Nhg-YC-E5f"/>
+                                                    <outlet property="imgWidth" destination="6A3-JS-Oj3" id="FoS-Cm-Jyc"/>
                                                     <outlet property="lblCalenderDate" destination="oik-V1-m7z" id="sQp-aU-ACg"/>
                                                     <outlet property="lblDate" destination="edx-PN-I9i" id="1uq-3M-SE3"/>
                                                     <outlet property="lblTittle" destination="uMm-Fl-jJw" id="75c-AE-nBA"/>
@@ -5997,6 +5999,7 @@
                                                 </tableViewCellContentView>
                                                 <connections>
                                                     <outlet property="imgCon" destination="W80-G6-Smu" id="X7Y-IC-2w8"/>
+                                                    <outlet property="imgWidth" destination="0bh-uJ-TUz" id="1sc-ng-vFf"/>
                                                     <outlet property="lblCalenderDate" destination="Aqs-7u-81F" id="CzR-Fr-vfs"/>
                                                     <outlet property="lblDate" destination="nZW-lZ-a6G" id="k1z-Tm-ao9"/>
                                                     <outlet property="lblTittle" destination="Ogy-ot-7P4" id="krN-f7-Jd7"/>

@@ -7,47 +7,77 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "839FDF9B-EE9E-4BB6-A6D5-A72E137D542D"
-            shouldBeEnabled = "Yes"
+            uuid = "FCBA8BAC-06E1-4A9E-B14B-6A1EE019B72F"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "NscLab/ChatVC.swift"
+            filePath = "NscLab/ConfrenceVC.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "383"
-            endingLineNumber = "383"
-            landmarkName = "configureDatabase()"
+            startingLineNumber = "118"
+            endingLineNumber = "118"
+            landmarkName = "tableView(_:numberOfRowsInSection:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "839FDF9B-EE9E-4BB6-A6D5-A72E137D542D - daa9862dd0fa7592"
-                  shouldBeEnabled = "Yes"
+                  uuid = "FCBA8BAC-06E1-4A9E-B14B-6A1EE019B72F - 6ec9aec8691273e0"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "NSCLab.ChatVC.configureDatabase() -&gt; ()"
+                  symbolName = "NSCLab.ConfrenceVC.tableView(_: __C.UITableView, numberOfRowsInSection: Swift.Int) -&gt; Swift.Int"
                   moduleName = "NSCLab"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ashu/Documents/NSCLab/NscLab/ChatVC.swift"
+                  urlString = "file:///Users/ashu/Documents/NSCLab/NscLab/ConfrenceVC.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "384"
-                  endingLineNumber = "384"
-                  offsetFromSymbolStart = "408">
+                  startingLineNumber = "118"
+                  endingLineNumber = "118"
+                  offsetFromSymbolStart = "172">
                </Location>
                <Location
-                  uuid = "839FDF9B-EE9E-4BB6-A6D5-A72E137D542D - fbab97bc593357fb"
-                  shouldBeEnabled = "Yes"
+                  uuid = "FCBA8BAC-06E1-4A9E-B14B-6A1EE019B72F - 6ec9aec8691273e0"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;Swift.Error&gt;, __C.FIRDatabaseReference) -&gt; () in NSCLab.ChatVC.configureDatabase() -&gt; ()"
+                  symbolName = "NSCLab.ConfrenceVC.tableView(_: __C.UITableView, numberOfRowsInSection: Swift.Int) -&gt; Swift.Int"
                   moduleName = "NSCLab"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/ashu/Documents/NSCLab/NscLab/ChatVC.swift"
+                  urlString = "file:///Users/ashu/Documents/NSCLab/NscLab/ConfrenceVC.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "387"
-                  endingLineNumber = "387"
-                  offsetFromSymbolStart = "28">
+                  startingLineNumber = "118"
+                  endingLineNumber = "118"
+                  offsetFromSymbolStart = "256">
+               </Location>
+               <Location
+                  uuid = "FCBA8BAC-06E1-4A9E-B14B-6A1EE019B72F - 6ec9aec8691273e0"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NSCLab.ConfrenceVC.tableView(_: __C.UITableView, numberOfRowsInSection: Swift.Int) -&gt; Swift.Int"
+                  moduleName = "NSCLab"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ashu/Documents/NSCLab/NscLab/ConfrenceVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "118"
+                  endingLineNumber = "118"
+                  offsetFromSymbolStart = "719">
+               </Location>
+               <Location
+                  uuid = "FCBA8BAC-06E1-4A9E-B14B-6A1EE019B72F - 6ec9aec8691273e0"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NSCLab.ConfrenceVC.tableView(_: __C.UITableView, numberOfRowsInSection: Swift.Int) -&gt; Swift.Int"
+                  moduleName = "NSCLab"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/ashu/Documents/NSCLab/NscLab/ConfrenceVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "118"
+                  endingLineNumber = "118"
+                  offsetFromSymbolStart = "1194">
                </Location>
             </Locations>
          </BreakpointContent>

@@ -393,6 +393,7 @@ class LoginVc: UIViewController ,UITextFieldDelegate
                          
                             self.login_user(uid: result["email"].stringValue.replacingOccurrences(of: ".", with: "@"))
                             UserDefaults.standard.set(result["weChatID"].stringValue, forKey: "wechatid")
+                           UserDefaults.standard.set("http://"+result["profileImage"].stringValue, forKey: "profilePic")
                             UserDefaults.standard.set(result["organization"].stringValue, forKey: "organization")
                             UserDefaults.standard.set(result["givenName"].stringValue, forKey: "givenName")
                             UserDefaults.standard.set(result["surname"].stringValue, forKey: "surname")

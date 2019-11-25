@@ -249,11 +249,26 @@ class InterestVC: UIViewController,UICollectionViewDelegate,UICollectionViewData
       
     @IBAction func btnRemoveTUI(_ sender: UIButton)
     {
-        if interestData.count > 1
-        {
-            interestId = interestData[sender.tag]["interest_id"].intValue
-            removeInterestApi()
-        }
+        let alert = UIAlertController(title: "Delete!", message: "Are you sure you want to cancel this interest?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "DELETE", style: .default, handler: { action in
+            print("Download Clicked")
+            if self.interestData.count > 1
+            {
+                self.interestId = self.interestData[sender.tag]["interest_id"].intValue
+                self.removeInterestApi()
+            }
+            
+        }))
+        
+        alert.addAction(UIAlertAction(title: "CANCEL", style: .default, handler: { action in
+            print("Download Clicked")
+            
+            
+            
+        }))
+        
+        self.present(alert, animated: true, completion: nil)
+        
         
     }
     

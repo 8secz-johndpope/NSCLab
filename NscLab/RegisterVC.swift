@@ -112,7 +112,7 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
             
             
             dropDown.anchorView = btnDropDown
-            dropDown.dataSource = ["Proferssor", "Miss", "Sir"]
+            dropDown.dataSource = ["Professor", "Miss", "Sir"]
             
             countryDropDown.anchorView = btnCountry
             countryDropDown.dataSource = ["INDIA", "AUSTRALIA", "US", "UK", "CANADA"]
@@ -326,16 +326,16 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
         }
         
         
-        func textFieldDidBeginEditing(_ textField: UITextField) {
-            scrollView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
-        }
-        
-        
-        
-        
-        func textFieldDidEndEditing(_ textField: UITextField) {
-            scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
-        }
+//        func textFieldDidBeginEditing(_ textField: UITextField) {
+//            scrollView.setContentOffset(CGPoint(x: 0, y: 100), animated: true)
+//        }
+//
+//
+//
+//
+//        func textFieldDidEndEditing(_ textField: UITextField) {
+//            scrollView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+//        }
         
          
          func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool
@@ -592,6 +592,11 @@ class RegisterVC: UIViewController,UITextFieldDelegate {
                      PopUp(Controller: self, title: "Oops!", message: "Givenname is required", type: .error, time: 3)
 
             }
+            else if (txtSelectTittle.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
+            {
+                      PopUp(Controller: self, title: "Oops!", message: "Title is required", type: .error, time: 3)
+            }
+
             else if (txtOrganizer.text! as NSString).trimmingCharacters(in: .whitespaces).isEmpty
                 {
                           PopUp(Controller: self, title: "Oops!", message: "Organization is required", type: .error, time: 3)
